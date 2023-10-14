@@ -6,12 +6,17 @@ namespace TsingIGME601
 {
     public class PreviewFollowMouse : MonoBehaviour
     {
+        public LevelEditorManager _manager;
         void LateUpdate()
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
+            int layer_mask = LayerMask.GetMask("Build Surface");
+            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layer_mask))
             {
-                transform.position = hit.point;
+                //get grid position
+                transform.position = Utility.GetGridPosition(hit);
+
+                //update rotation
                 transform.rotation = hit.transform.rotation;
             }
             else

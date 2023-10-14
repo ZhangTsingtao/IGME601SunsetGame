@@ -12,7 +12,9 @@ namespace TsingIGME601
         public int CurrentButtonPressed = -1;
 
         public GameObject ItemPreview;
-        public Material _previewMaterial;
+        [SerializeField] private Material _previewMaterial;
+
+        public Grid[] Grids;
 
         private void Start()
         {
@@ -24,11 +26,12 @@ namespace TsingIGME601
             if (Input.GetMouseButtonDown(0) && CurrentButtonPressed != -1)//ItemButtons[CurrentButtonPressed].Clicked
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
+                int layer_mask = LayerMask.GetMask("Build Surface");
+                if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layer_mask))
                 {
                     //Build
                     ItemButtons[CurrentButtonPressed].Clicked = false;
-                    Instantiate(ItemPrefabs[CurrentButtonPressed], hit.point, hit.transform.rotation);
+                    Instantiate(ItemPrefabs[CurrentButtonPressed], Utility.GetGridPosition(hit), hit.transform.rotation);
                     CurrentButtonPressed = -1;
 
                     //Destroy the image
@@ -40,6 +43,7 @@ namespace TsingIGME601
             }
         }
 
+        //called by controller (the button with the image)
         public void SpawnPreview(int id)
         {
             //instantiate a preview that follows the mouse
@@ -50,9 +54,19 @@ namespace TsingIGME601
 
             //change material to transparent
             ItemPreview.GetComponent<MeshRenderer>().material = _previewMaterial;
+            
+            //make the preview ignored by raycast,
+            //so that PreviewFollowMouse will behave as expected
+            int LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
+            ItemPreview.layer = LayerIgnoreRaycast;
 
+            //Assign this manager script to ItemPreview,
+            //so that it has reference to all grids
+            ItemPreview.GetComponent<PreviewFollowMouse>()._manager = this;
 
         }
+
+        
     }
 }
 
