@@ -22,6 +22,7 @@ namespace TsingIGME601
                 if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
                 {
                     agent.SetDestination(hit.point);
+                    Debug.Log(hit.point);
                 }
             }
         }
