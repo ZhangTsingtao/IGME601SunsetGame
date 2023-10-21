@@ -34,8 +34,7 @@ namespace TsingIGME601
             {
                 //not clickable until placed, and change quantity left
                 Clicked = true;
-                quantity--;
-                quantityText.text = quantity.ToString();
+                MinusQuantity();
 
                 //couple with LevelEditorManager
                 //let manager get the right one
@@ -44,6 +43,16 @@ namespace TsingIGME601
                 //Let manager instantiate a preview that follows the mouse
                 _editor.SpawnPreview(ID);
             }
+        }
+        public void AddQuantity()
+        {
+            quantity++;
+            quantityText.text = quantity.ToString();
+        }
+        public void MinusQuantity()
+        {
+            quantity--;
+            quantityText.text = quantity.ToString();
         }
 
     }
