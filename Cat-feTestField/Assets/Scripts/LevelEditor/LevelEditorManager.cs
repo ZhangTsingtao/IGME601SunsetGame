@@ -157,9 +157,11 @@ namespace TsingIGME601
             ItemPreview = Instantiate(ItemPrefabs[id], worldPos, Quaternion.identity);
             ItemPreview.SetActive(true);
             var previewScript = ItemPreview.AddComponent<PreviewFollowMouse>();
-            previewScript._editor = this; 
+            previewScript._editor = this;
 
             //change material to transparent
+            Color _color = ItemPreview.GetComponent<MeshRenderer>().material.color;
+            _previewMaterial.color = new Color(_color.r, _color.g, _color.b, 0.5f);
             ItemPreview.GetComponent<MeshRenderer>().material = _previewMaterial;
             
             //make the preview ignored by raycast,

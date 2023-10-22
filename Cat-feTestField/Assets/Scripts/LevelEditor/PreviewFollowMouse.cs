@@ -52,13 +52,30 @@ namespace TsingIGME601
             }
         }
 
+
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawCube
+                (transform.TransformPoint(Vector3.up * _col.bounds.extents.y / transform.localScale.y), 
+                _col.bounds.extents * 2);
+        }
+
         private void collisionDetection()
         {
             Collider[] hitColliders = Physics.OverlapBox
-                (transform.TransformPoint(Vector3.up * _col.bounds.size.y / 2), transform.localScale / 2, Quaternion.identity);
+                (transform.TransformPoint(Vector3.up * _col.bounds.extents.y / transform.localScale.y), 
+                _col.bounds.extents / 2, 
+                Quaternion.identity);//transform.localScale / 2
 
-            if(hitColliders.Length > 1)//there must be itself. so start from one
+            Debug.Log("extents : " + _col.bounds.extents);
+
+            if (hitColliders.Length > 1)//there must be itself. so start from one
             {
+                for (int i = 0;i< hitColliders.Length; i++)
+                {
+                    Debug.Log("Collider " + i + ": " + hitColliders[i].name.ToString());
+                }
                 if (_placeable)
                 {
                     _placeable = false;
@@ -105,11 +122,7 @@ namespace TsingIGME601
             }
         }
 
-        private void OnDrawGizmosSelected()
-        {
-            Gizmos.DrawCube(transform.TransformPoint(Vector3.up * _col.bounds.size.y / 2), 
-                _col.bounds.size);
-        }
+        
 
     }
 }
