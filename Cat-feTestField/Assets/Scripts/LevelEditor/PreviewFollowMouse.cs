@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace TsingIGME601
@@ -9,25 +10,35 @@ namespace TsingIGME601
     {
         public LevelEditorManager _editor;
 
-        private Collider _col;
+        private Collider _collider;
 
         public bool _placeable = false;
-        [SerializeField] private Material _material;
-        [SerializeField] private Material _previewMaterial;
-        [SerializeField] private Material _previewDeniedMaterial;
+        public Material _previewDeniedMaterial;
+        public Material[] _materials;
+        public Color[] _originalColorBuffer;
         private void Start()
         {
-            _material = GetComponent<MeshRenderer>().material;
-            _previewMaterial = _editor._previewMaterial;
-            _previewDeniedMaterial = _editor._PreviewDeniedMaterial;
-            _col = gameObject.GetComponent<Collider>();
+            _collider = gameObject.GetComponent<Collider>();
+
+            _materials = GetComponent<MeshRenderer>().materials;
+            _originalColorBuffer = new Color[_materials.Length];
+            for (int i = 0; i < _materials.Length; i++)
+            {
+                //store original materials
+                _originalColorBuffer[i] = _materials[i].color;
+                _originalColorBuffer[i].a = 0.5f;
+
+                //set material to transparent
+                Material newMat = Utility.MaterialOpaqueToTransparent(_materials[i], 0.5f);
+                _materials[i] = newMat;
+            }
         }
         void LateUpdate()
         {
-            positionToGrid();
-            collisionDetection();
+            PositionToGrid();
+            CollisionDetection();
         }
-        private void positionToGrid()
+        private void PositionToGrid()
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             int layer_mask = LayerMask.GetMask("Build Surface");
@@ -57,45 +68,89 @@ namespace TsingIGME601
         {
             Gizmos.color = Color.red;
             Gizmos.DrawCube
-                (transform.TransformPoint(Vector3.up * _col.bounds.extents.y / transform.localScale.y), 
-                _col.bounds.extents * 2);
+                (transform.TransformPoint(Vector3.up * _collider.bounds.extents.y / transform.localScale.y), 
+                _collider.bounds.extents * 2);
         }
 
-        private void collisionDetection()
-        {
-            Collider[] hitColliders = Physics.OverlapBox
-                (transform.TransformPoint(Vector3.up * _col.bounds.extents.y / transform.localScale.y), 
-                _col.bounds.extents / 2, 
-                Quaternion.identity);//transform.localScale / 2
-
-            Debug.Log("extents : " + _col.bounds.extents);
-
-            if (hitColliders.Length > 1)//there must be itself. so start from one
+        private Collider[] _colBuffer = new Collider[4];
+        private void CollisionDetection()
+        { 
+            int hitAmount = 0;
+            hitAmount = Physics.OverlapBoxNonAlloc
+                (transform.TransformPoint(Vector3.up * _collider.bounds.extents.y / transform.localScale.y), 
+                _collider.bounds.extents / 2,
+                _colBuffer);
+            //if overlap
+            if (hitAmount > 1)//itself is also included. so start from 1 rather than 0
             {
-                for (int i = 0;i< hitColliders.Length; i++)
-                {
-                    Debug.Log("Collider " + i + ": " + hitColliders[i].name.ToString());
-                }
                 if (_placeable)
                 {
                     _placeable = false;
                     //Debug.Log("Overlap");
-                    _material.color = _previewDeniedMaterial.color;
+                    for (int i = 0; i < _materials.Length; i++)
+                    {
+                        Material newMat = Utility.MaterialOpaqueToTransparent(_materials[i], 0.5f);
+                        _materials[i] = newMat;
+                        _materials[i].color = _previewDeniedMaterial.color;
+                    }
                 }
             }
+            //no overlap
             else
             {
                 if (!_placeable)
                 {
                     _placeable = true;
-                    //Debug.Log("Fine");
-                    _material.color = _previewMaterial.color;
+                    Debug.Log("Fine");
+                    for (int i = 0; i < _materials.Length; i++)
+                    {
+                        _materials[i].color = _originalColorBuffer[i];
+                    }
                 }
             }
         }
+        //private void CollisionDetection()
+        //{
+        //    Collider[] hitColliders = Physics.OverlapBox
+        //        (transform.TransformPoint(Vector3.up * _col.bounds.extents.y / transform.localScale.y), 
+        //        _col.bounds.extents / 2, 
+        //        Quaternion.identity);//transform.localScale / 2
+
+        //    //Debug.Log("extents : " + _col.bounds.extents);
+
+        //    if (hitColliders.Length > 1)//there must be itself. so start from one
+        //    {
+        //        //for (int i = 0;i< hitColliders.Length; i++)
+        //        //{
+        //        //    Debug.Log("Collider " + i + ": " + hitColliders[i].name.ToString());
+        //        //}
+        //        if (_placeable)
+        //        {
+        //            _placeable = false;
+        //            //Debug.Log("Overlap");
+        //            foreach(Material mat in _materials)
+        //            {
+        //                mat.color = _previewDeniedMaterial.color;
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (!_placeable)
+        //        {
+        //            _placeable = true;
+        //            //Debug.Log("Fine");
+        //            foreach (Material mat in _materials)
+        //            {
+        //                mat.SetFloat("_Mode", 3);
+        //                mat.color = new Color(mat.color.r,mat.color.g,mat.color.b,0.5f);
+        //            }
+        //        }
+        //    }
+        //}
 
         //used for removing itself
-        private void selfCheck(Collider[] hitColliders)
+        private void SelfCheck(Collider[] hitColliders)
         {
             if (hitColliders.Length > 0)
             {
@@ -121,8 +176,6 @@ namespace TsingIGME601
                 }
             }
         }
-
-        
 
     }
 }

@@ -2,37 +2,68 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.RuleTile.TilingRuleOutput;
-
-public static class Utility 
+namespace TsingIGME601
 {
-    //Take a RaycastHit, then see if there's a grid component
-    //if there is, then return the grid position
-    //if not, just return the original hit position
-    public static Vector3 GetGridPosition(RaycastHit hit)
+    public static class Utility
     {
-        Grid grid = hit.collider.GetComponentInChildren<Grid>();
-        if (grid != null)
+        //Take a RaycastHit, then see if there's a grid component
+        //if there is, then return the grid position
+        //if not, just return the original hit position
+        public static Vector3 GetGridPosition(RaycastHit hit)
         {
-            GridLayout gridLayout = grid.GetComponentInParent<GridLayout>();
-            Vector3Int cellPosition = gridLayout.WorldToCell(hit.point);
-            //Debug.Log(cellPosition);
-            return gridLayout.CellToWorld(cellPosition);
+            Grid grid = hit.collider.GetComponentInChildren<Grid>();
+            if (grid != null)
+            {
+                GridLayout gridLayout = grid.GetComponentInParent<GridLayout>();
+                Vector3Int cellPosition = gridLayout.WorldToCell(hit.point);
+                //Debug.Log(cellPosition);
+                return gridLayout.CellToWorld(cellPosition);
+            }
+            else return hit.point;
         }
-        else return hit.point;
+        public static Material MaterialOpaqueToTransparent(Material material, float alphaValue)
+        {
+            material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            material.SetInt("_ZWrite", 0);
+            material.SetInt("_Surface", 1);
+
+            material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+
+            material.SetShaderPassEnabled("DepthOnly", false);
+            material.SetShaderPassEnabled("SHADOWCASTER", false);
+
+            material.SetOverrideTag("RenderType", "Transparent");
+
+            material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+
+            material.color = new Color(material.color.r, material.color.g, material.color.b, alphaValue);
+            
+            return material;
+        }
+
+        public static Material MaterialTransparentToOpaque(Material material)
+        {
+            material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+            material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+            material.SetInt("_ZWrite", 1);
+            material.SetInt("_Surface", 0);
+
+            material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry;
+
+            material.SetShaderPassEnabled("DepthOnly", true);
+            material.SetShaderPassEnabled("SHADOWCASTER", true);
+
+            material.SetOverrideTag("RenderType", "Opaque");
+
+            material.DisableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+
+            material.color = new Color(material.color.r, material.color.g, material.color.b, 1f);
+
+            return material;
+        }
     }
-
-
-    //This is the method to return the center of a cell
-    //public static Vector3 GetGridPosition(RaycastHit hit)
-    //{
-    //    Grid grid = hit.collider.GetComponentInChildren<Grid>();
-    //    if (grid != null)
-    //    {
-    //        Vector3Int cellPosition = grid.WorldToCell(hit.point);
-    //        return grid.GetCellCenterWorld(cellPosition);
-    //        //Debug.Log(gridLayout.CellToWorld(cellPosition));
-    //        //return gridLayout.CellToWorld(cellPosition);
-    //    }
-    //    else return hit.point;
-    //}
 }
+

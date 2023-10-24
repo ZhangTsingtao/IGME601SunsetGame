@@ -12,9 +12,8 @@ namespace TsingIGME601
         public GameObject[] ItemPrefabs;
         public int CurrentButtonPressed = -1;
 
-        public GameObject ItemPreview;
-        public Material _previewMaterial;
-        public Material _PreviewDeniedMaterial;
+        private GameObject ItemPreview;
+        public Material _PreviewMatDenied;
 
         public Grid[] Grids;
 
@@ -26,7 +25,7 @@ namespace TsingIGME601
         {
             CurrentButtonPressed = -1;
 
-            addVisualGrid();
+            AddVisualGrid();
             _BSVBuffer = BuildSurfaces[0].GetComponent<BuildSurfaceVisual>();
         }
         private void Update()
@@ -47,7 +46,7 @@ namespace TsingIGME601
         }
         //This method only works when the BuildSurfaces are along the world XYZ axis,
         //if they have other rotation, the method can't handle it
-        private void addVisualGrid()
+        private void AddVisualGrid()
         {
             Collider[] cols = Physics.OverlapSphere(Vector3.zero, 1000f, LayerMask.GetMask("Build Surface"));
             BuildSurfaces = new GameObject[cols.Length];
@@ -95,7 +94,7 @@ namespace TsingIGME601
                     {
                         case 0:
                             visualOffset = new Vector3(normalLength, 0, 0);
-                            setVGPos(vg, visualOffset, toCamDir, surfacePos);
+                            SetVGPos(vg, visualOffset, toCamDir, surfacePos);
 
                             vg.transform.rotation = Quaternion.Euler(0, 0, 90);
                             if(Vector3.Dot(vg.transform.up,toCamDir) < 0)
@@ -103,11 +102,11 @@ namespace TsingIGME601
                             break;
                         case 1:
                             visualOffset = new Vector3(0, normalLength, 0);
-                            setVGPos(vg, visualOffset, toCamDir, surfacePos);
+                            SetVGPos(vg, visualOffset, toCamDir, surfacePos);
                             break;
                         case 2:
                             visualOffset = new Vector3(0, 0, normalLength);
-                            setVGPos(vg, visualOffset, toCamDir, surfacePos);
+                            SetVGPos(vg, visualOffset, toCamDir, surfacePos);
 
                             vg.transform.rotation = Quaternion.Euler(90, 0, 0);
                             if (Vector3.Dot(vg.transform.up, toCamDir) < 0)
@@ -120,7 +119,7 @@ namespace TsingIGME601
                 else continue;
             }
         }
-        private void setVGPos(GameObject vg, Vector3 visualOffset, Vector3 toCamDir, Vector3 surfacePos)
+        private void SetVGPos(GameObject vg, Vector3 visualOffset, Vector3 toCamDir, Vector3 surfacePos)
         {
             vg.transform.position = Vector3.Dot(visualOffset, toCamDir) >= 0 ? visualOffset : -visualOffset;
             vg.transform.position += surfacePos;
@@ -158,14 +157,14 @@ namespace TsingIGME601
             ItemPreview.SetActive(true);
             var previewScript = ItemPreview.AddComponent<PreviewFollowMouse>();
             previewScript._editor = this;
+            //assign the preview denied material
+            previewScript._previewDeniedMaterial = _PreviewMatDenied;
 
-            //change material to transparent
-            Color _color = ItemPreview.GetComponent<MeshRenderer>().material.color;
-            _previewMaterial.color = new Color(_color.r, _color.g, _color.b, 0.5f);
-            ItemPreview.GetComponent<MeshRenderer>().material = _previewMaterial;
-            
+            //materials are changed to transparent at the Start of PreviewFollowMouse
+
             //make the preview ignored by raycast,
-            //so that PreviewFollowMouse will behave as expected
+            //so that PreviewFollowMouse will avoid raycast from camera,
+            //not constantly changing its position
             int LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
             ItemPreview.layer = LayerIgnoreRaycast;
 

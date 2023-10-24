@@ -9,9 +9,9 @@ namespace TsingIGME601
 {
     public class NavMeshManager : MonoBehaviour
     {
-        [SerializeField] public GameObject[] Obstacles;
+        public GameObject[] Obstacles;
 
-        [SerializeField] public NavMeshSurface[] Surfaces;
+        public NavMeshSurface[] Surfaces;
 
         private bool _click = true;
 
