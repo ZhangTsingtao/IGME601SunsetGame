@@ -101,7 +101,7 @@ namespace TsingIGME601
                 if (!_placeable)
                 {
                     _placeable = true;
-                    Debug.Log("Fine");
+                    //Debug.Log("Fine");
                     for (int i = 0; i < _materials.Length; i++)
                     {
                         _materials[i].color = _originalColorBuffer[i];

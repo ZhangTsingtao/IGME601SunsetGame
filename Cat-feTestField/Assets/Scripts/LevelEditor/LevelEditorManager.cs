@@ -1,48 +1,46 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.ObjectChangeEventStream;
-
 
 namespace TsingIGME601
 {
     public class LevelEditorManager : MonoBehaviour
     {
-        public ItemController[] ItemButtons;
-        public GameObject[] ItemPrefabs;
-        public int CurrentButtonPressed = -1;
 
-        private GameObject ItemPreview;
+        [Header("Assign these two fields")]
         public Material _PreviewMatDenied;
-
-        public Grid[] Grids;
-
         [SerializeField] private GameObject VisualGrid;
+        [Header("The rest is generated")]
+        public ItemController itemController;
+        
+        public bool HaveButtonPressed = false;
+
+        [SerializeField] private GameObject ItemPreview;
+        public Grid[] Grids;
         [SerializeField] private GameObject[] BuildSurfaces;
-        BuildSurfaceVisual _BSVBuffer;
+        private BuildSurfaceVisual _BSVBuffer;
 
         private void Start()
         {
-            CurrentButtonPressed = -1;
-
+            HaveButtonPressed = false;
+            Grids = FindObjectsOfType<Grid>();
             AddVisualGrid();
             _BSVBuffer = BuildSurfaces[0].GetComponent<BuildSurfaceVisual>();
         }
         private void Update()
         {
-            if (CurrentButtonPressed != -1) //if a button is pressed
+            if (HaveButtonPressed) //if a button is pressed
             {
                 //Actually build on surfaces
-                if (Input.GetMouseButtonDown(0) && CurrentButtonPressed != -1)
+                if (Input.GetMouseButtonDown(0))
                 {
                     BuildFurniture();
                 }
-                if (Input.GetMouseButtonDown(1) && CurrentButtonPressed != -1)
+                if (Input.GetMouseButtonDown(1))
                 {
-                    CancelBuild(CurrentButtonPressed);
+                    CancelBuild();
                 }
             }
-
         }
         //This method only works when the BuildSurfaces are along the world XYZ axis,
         //if they have other rotation, the method can't handle it
@@ -135,25 +133,26 @@ namespace TsingIGME601
                 if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layer_mask))
                 {
                     //Build
-                    ItemButtons[CurrentButtonPressed].Clicked = false;
-                    Instantiate(ItemPrefabs[CurrentButtonPressed], Utility.GetGridPosition(hit), hit.transform.rotation);
-                    CurrentButtonPressed = -1;
+                    itemController.Clicked = false;
+                    GameObject item = Instantiate(itemController.ItemPrefab, Utility.GetGridPosition(hit), hit.transform.rotation);
+                    RemoveItem removeItem = item.AddComponent<RemoveItem>();
+                    removeItem.SetController(itemController);
+                    HaveButtonPressed = false;
 
                     Destroy(ItemPreview);
+                    ClearController();
                 }
                 //Disable Visual Grid
                 _BSVBuffer.VisualGrid.SetActive(false);
             }
-            
-            
         }
 
         //called by controller (the button with the image)
-        public void SpawnPreview(int id)
+        public void SpawnPreview()
         {
             //instantiate a preview that follows the mouse
             Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            ItemPreview = Instantiate(ItemPrefabs[id], worldPos, Quaternion.identity);
+            ItemPreview = Instantiate(itemController.ItemPrefab, worldPos, Quaternion.identity);
             ItemPreview.SetActive(true);
             var previewScript = ItemPreview.AddComponent<PreviewFollowMouse>();
             previewScript._editor = this;
@@ -174,13 +173,22 @@ namespace TsingIGME601
 
         }
         
-        public void CancelBuild(int id)
+        public void CancelBuild()
         {
             Destroy(ItemPreview);
-            ItemButtons[id].AddQuantity();
-            CurrentButtonPressed = -1;
+            itemController.AddQuantity();
+            HaveButtonPressed = false;
+            itemController.Clicked = false;
+            ClearController();
         }
-
+        public void SetController(ItemController controller)
+        {
+            if (itemController == null)
+            {
+                itemController = controller;
+            }
+        }
+        public void ClearController() { itemController = null; }
         
         public void ShowVisualGrid(BuildSurfaceVisual buildSurface)
         {

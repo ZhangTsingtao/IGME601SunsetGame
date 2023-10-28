@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 4974303416012795112}
   - component: {fileID: 8261744730568352589}
   - component: {fileID: 6143871168637802375}
-  - component: {fileID: -4612766675272568308}
   - component: {fileID: 8645198157293830540}
   m_Layer: 0
   m_Name: LandLamp
@@ -86,19 +85,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &-4612766675272568308
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5639516319465616978}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85f31fd231a075343a31f059ac33ebcb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: 0
 --- !u!65 &8645198157293830540
 BoxCollider:
   m_ObjectHideFlags: 0

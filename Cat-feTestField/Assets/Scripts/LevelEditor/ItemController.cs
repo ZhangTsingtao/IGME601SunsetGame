@@ -8,7 +8,7 @@ namespace TsingIGME601
 {
     public class ItemController : MonoBehaviour
     {
-        public int ID;
+        public GameObject ItemPrefab;
         public int quantity;
         public TextMeshProUGUI quantityText;
         public bool Clicked = false;
@@ -30,7 +30,7 @@ namespace TsingIGME601
         public void ButtonClicked()
         {
             //check anything left, and if the manager is free (no other assets being clicked)
-            if (quantity > 0 && _editor.CurrentButtonPressed == -1)
+            if (quantity > 0 && _editor.HaveButtonPressed == false)
             {
                 //not clickable until placed, and change quantity left
                 Clicked = true;
@@ -38,10 +38,10 @@ namespace TsingIGME601
 
                 //couple with LevelEditorManager
                 //let manager get the right one
-                _editor.CurrentButtonPressed = ID;
-
+                _editor.HaveButtonPressed = true;
+                _editor.SetController(this);
                 //Let manager instantiate a preview that follows the mouse
-                _editor.SpawnPreview(ID);
+                _editor.SpawnPreview();
             }
         }
         public void AddQuantity()

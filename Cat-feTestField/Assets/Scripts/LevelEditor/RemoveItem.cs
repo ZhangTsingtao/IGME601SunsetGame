@@ -6,8 +6,13 @@ namespace TsingIGME601
 {
     public class RemoveItem : MonoBehaviour
     {
-        public int ID;
+        public ItemController _controller;
         private LevelEditorManager _editor;
+
+        public void SetController(ItemController controller)
+        {
+            _controller = controller;
+        }
 
         void Start()
         {
@@ -19,9 +24,8 @@ namespace TsingIGME601
         {
             if (Input.GetMouseButtonDown(1))
             {
+                _controller.AddQuantity();
                 Destroy(this.gameObject);
-                _editor.ItemButtons[ID].quantity++;
-                _editor.ItemButtons[ID].quantityText.text = _editor.ItemButtons[ID].quantity.ToString();
             }
         }
     }

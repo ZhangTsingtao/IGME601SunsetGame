@@ -1168,7 +1168,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59ed10cb411ce074cbafaeb5643402b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ID: 0
+  ItemPrefab: {fileID: 5917069198389787447, guid: a85d261a3e21c2e4fbf3ecb8acfc1e61, type: 3}
   quantity: 5
   quantityText: {fileID: 2068050926}
   Clicked: 0
@@ -1389,7 +1389,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59ed10cb411ce074cbafaeb5643402b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ID: 1
+  ItemPrefab: {fileID: 7239381272762827741, guid: 5a10157e41fd8c5448552ea52e85d3f5, type: 3}
   quantity: 5
   quantityText: {fileID: 2002070719}
   Clicked: 0
@@ -2073,7 +2073,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59ed10cb411ce074cbafaeb5643402b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ID: 2
+  ItemPrefab: {fileID: 5639516319465616978, guid: 965e99fbae1d7b04284f5f59fe0da047, type: 3}
   quantity: 5
   quantityText: {fileID: 1181453701}
   Clicked: 0
@@ -2594,7 +2594,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2030972549}
-  - {fileID: 2015260459}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2869,56 +2868,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2002070717}
   m_CullTransparentMesh: 1
---- !u!1 &2015260457
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2015260459}
-  - component: {fileID: 2015260458}
-  m_Layer: 0
-  m_Name: NavMeshManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &2015260458
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2015260457}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f374495186d0ceb4b84116dcdad9efde, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Obstacles:
-  - {fileID: 0}
-  Surfaces:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
---- !u!4 &2015260459
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2015260457}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -15.54693, y: 9.493513, z: -19.566391}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1576004313}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2030972547
 GameObject:
   m_ObjectHideFlags: 0
@@ -2948,21 +2897,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6fe14732d7c5624d8be62e747b4ab7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ItemButtons:
-  - {fileID: 916689136}
-  - {fileID: 923474829}
-  - {fileID: 1180304196}
-  ItemPrefabs:
-  - {fileID: 5917069198389787447, guid: a85d261a3e21c2e4fbf3ecb8acfc1e61, type: 3}
-  - {fileID: 7239381272762827741, guid: 5a10157e41fd8c5448552ea52e85d3f5, type: 3}
-  - {fileID: 5639516319465616978, guid: 965e99fbae1d7b04284f5f59fe0da047, type: 3}
-  CurrentButtonPressed: -1
   _PreviewMatDenied: {fileID: 2100000, guid: fd2b50e2d5dc2fd48945d0a9b5e56df0, type: 2}
-  Grids:
-  - {fileID: 17902072}
-  - {fileID: 17902072}
-  - {fileID: 411471097}
   VisualGrid: {fileID: 5988762622828484331, guid: cc4fa65f398a14a41a65ee2709367ff1, type: 3}
+  itemController: {fileID: 0}
+  HaveButtonPressed: 255
+  ItemPreview: {fileID: 0}
+  Grids: []
   BuildSurfaces: []
 --- !u!4 &2030972549
 Transform:
