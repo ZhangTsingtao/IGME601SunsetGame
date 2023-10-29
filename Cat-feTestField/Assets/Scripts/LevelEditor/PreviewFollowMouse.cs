@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst.CompilerServices;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -16,6 +17,9 @@ namespace TsingIGME601
         public Material _previewDeniedMaterial;
         public Material[] _materials;
         public Color[] _originalColorBuffer;
+
+        //rotation
+        [SerializeField] private int _rotationDegree = 0;
         private void Start()
         {
             _collider = gameObject.GetComponent<Collider>();
@@ -33,7 +37,34 @@ namespace TsingIGME601
                 _materials[i] = newMat;
             }
         }
-        void LateUpdate()
+        private void Update()
+        {
+            if(Input.GetKeyDown(KeyCode.Q))
+            {
+                AddRotationPerpendicular();
+            }
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                MinusRotationPerpendicular();
+            }
+        }
+        private void AddRotationPerpendicular()
+        {
+            _rotationDegree += 90;
+            if(_rotationDegree == 360)
+            {
+                _rotationDegree = 0;
+            }
+        }
+        private void MinusRotationPerpendicular()
+        {
+            _rotationDegree -= 90;
+            if (_rotationDegree == -360)
+            {
+                _rotationDegree = 0;
+            }
+        }
+        private void LateUpdate()
         {
             PositionToGrid();
             CollisionDetection();
@@ -48,7 +79,7 @@ namespace TsingIGME601
                 transform.position = Utility.GetGridPosition(hit);
 
                 //update rotation
-                transform.rotation = hit.transform.rotation;
+                SetRotation(hit.transform);
 
                 //the surface also shows its visual grid
                 _editor.ShowVisualGrid(hit.transform.GetComponent<BuildSurfaceVisual>());
@@ -60,6 +91,19 @@ namespace TsingIGME601
                 transform.position = new Vector3(worldPos.x, worldPos.y, worldPos.z) + Camera.main.transform.forward * 10;
 
                 _editor.ClearVisualGrid();
+            }
+        }
+        private void SetRotation(Transform targetTransform)
+        {
+            if (Vector3.Angle(transform.up, targetTransform.up) > 10)
+            {
+                Debug.Log("Angle greater than 10");
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetTransform.rotation, 180f);
+            }
+            if (_rotationDegree != 0)
+            {
+                transform.rotation = transform.rotation * Quaternion.AngleAxis(_rotationDegree, Vector3.up);
+                _rotationDegree = 0;
             }
         }
 

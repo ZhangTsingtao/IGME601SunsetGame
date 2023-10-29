@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 namespace TsingIGME601
 {
@@ -11,15 +12,16 @@ namespace TsingIGME601
         //if not, just return the original hit position
         public static Vector3 GetGridPosition(RaycastHit hit)
         {
-            Grid grid = hit.collider.GetComponentInChildren<Grid>();
-            if (grid != null)
+            GridLayout gridLayout = hit.transform.GetComponentInChildren<GridLayout>();
+
+            if (gridLayout == null)
             {
-                GridLayout gridLayout = grid.GetComponentInParent<GridLayout>();
-                Vector3Int cellPosition = gridLayout.WorldToCell(hit.point);
-                //Debug.Log(cellPosition);
-                return gridLayout.CellToWorld(cellPosition);
+                Debug.LogWarning("Can't find any grid on Raycast hit");
+                return hit.point;
             }
-            else return hit.point;
+            
+            Vector3Int cellPosition = gridLayout.WorldToCell(hit.point);
+            return gridLayout.CellToWorld(cellPosition);
         }
         public static Material MaterialOpaqueToTransparent(Material material, float alphaValue)
         {

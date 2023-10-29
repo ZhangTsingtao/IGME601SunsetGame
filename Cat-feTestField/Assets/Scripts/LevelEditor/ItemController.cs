@@ -10,13 +10,14 @@ namespace TsingIGME601
     {
         public GameObject ItemPrefab;
         public int quantity;
-        public TextMeshProUGUI quantityText;
+        private TextMeshProUGUI quantityText;
         public bool Clicked = false;
 
         private Button _button;
         private LevelEditorManager _editor;
         void Start()
         {
+            quantityText = GetComponentInChildren<TextMeshProUGUI>();
             quantityText.text = quantity.ToString();
             _button = GetComponent<Button>();
             _button.onClick.AddListener(ButtonClicked);//Don't need to add event in inspector

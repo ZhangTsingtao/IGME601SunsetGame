@@ -16,14 +16,14 @@ namespace TsingIGME601
         public bool HaveButtonPressed = false;
 
         [SerializeField] private GameObject ItemPreview;
-        public Grid[] Grids;
+        
         [SerializeField] private GameObject[] BuildSurfaces;
         private BuildSurfaceVisual _BSVBuffer;
 
         private void Start()
         {
             HaveButtonPressed = false;
-            Grids = FindObjectsOfType<Grid>();
+            
             AddVisualGrid();
             _BSVBuffer = BuildSurfaces[0].GetComponent<BuildSurfaceVisual>();
         }
@@ -63,58 +63,57 @@ namespace TsingIGME601
                 //choose the thinnest axis of the BuildSurface's collider
                 BoxCollider bCol = BuildSurfaces[i].GetComponent<BoxCollider>();
                 int axis = 0;
-                if (bCol != null)
-                {
-                    float[] boundSizes = {bCol.bounds.size.x,
+                if (bCol == null) continue;
+
+                float[] boundSizes = {bCol.bounds.size.x,
                                       bCol.bounds.size.y,
                                       bCol.bounds.size.z};
-                    
-                    float min = boundSizes[0];
-                    for (int j = 0; j < boundSizes.Length; j++)
+
+                float min = boundSizes[0];
+                for (int j = 0; j < boundSizes.Length; j++)
+                {
+                    Debug.Log(j + "  " + BuildSurfaces[i] + "  " + boundSizes[j]);
+                    if (boundSizes[j] < min)
                     {
-                        Debug.Log(j + "  " +BuildSurfaces[i] + "  "+ boundSizes[j]);
-                        if (boundSizes[j] < min)
-                        {
-                            min = boundSizes[j];
-                            axis = j;
-                        }
+                        min = boundSizes[j];
+                        axis = j;
                     }
-
-                    Debug.Log(axis.ToString());
-
-                    //set position, rotation based on the BuildSurface's collider bounding box
-                    //the visual grid snaps to the thinnest side of the collider
-                    float normalLength = boundSizes[axis] / 2 + 0.01f;
-                    Vector3 surfacePos = BuildSurfaces[i].transform.position;
-                    Vector3 toCamDir = Camera.main.transform.position - BuildSurfaces[i].transform.position;
-                    Vector3 visualOffset = new();
-                    switch (axis)
-                    {
-                        case 0:
-                            visualOffset = new Vector3(normalLength, 0, 0);
-                            SetVGPos(vg, visualOffset, toCamDir, surfacePos);
-
-                            vg.transform.rotation = Quaternion.Euler(0, 0, 90);
-                            if(Vector3.Dot(vg.transform.up,toCamDir) < 0)
-                                vg.transform.rotation = Quaternion.Euler(0, 0, -90);
-                            break;
-                        case 1:
-                            visualOffset = new Vector3(0, normalLength, 0);
-                            SetVGPos(vg, visualOffset, toCamDir, surfacePos);
-                            break;
-                        case 2:
-                            visualOffset = new Vector3(0, 0, normalLength);
-                            SetVGPos(vg, visualOffset, toCamDir, surfacePos);
-
-                            vg.transform.rotation = Quaternion.Euler(90, 0, 0);
-                            if (Vector3.Dot(vg.transform.up, toCamDir) < 0)
-                                vg.transform.rotation = Quaternion.Euler(-90, 0, 0);
-                            break;
-                    }
-                    
-                    vg.SetActive(false);
                 }
-                else continue;
+
+                Debug.Log(axis.ToString());
+
+                //set position, rotation based on the BuildSurface's collider bounding box
+                //the visual grid snaps to the thinnest side of the collider
+                float normalLength = boundSizes[axis] / 2 + 0.01f;
+                Vector3 surfacePos = BuildSurfaces[i].transform.position;
+                Vector3 toCamDir = Camera.main.transform.position - BuildSurfaces[i].transform.position;
+                Vector3 visualOffset = new();
+                switch (axis)
+                {
+                    case 0:
+                        visualOffset = new Vector3(normalLength, 0, 0);
+                        SetVGPos(vg, visualOffset, toCamDir, surfacePos);
+
+                        vg.transform.rotation = Quaternion.Euler(0, 0, 90);
+                        if (Vector3.Dot(vg.transform.up, toCamDir) < 0)
+                            vg.transform.rotation = Quaternion.Euler(0, 0, -90);
+                        break;
+                    case 1:
+                        visualOffset = new Vector3(0, normalLength, 0);
+                        SetVGPos(vg, visualOffset, toCamDir, surfacePos);
+                        break;
+                    case 2:
+                        visualOffset = new Vector3(0, 0, normalLength);
+                        SetVGPos(vg, visualOffset, toCamDir, surfacePos);
+
+                        vg.transform.rotation = Quaternion.Euler(90, 0, 0);
+                        if (Vector3.Dot(vg.transform.up, toCamDir) < 0)
+                            vg.transform.rotation = Quaternion.Euler(-90, 0, 0);
+                        break;
+                }
+
+                vg.SetActive(false);
+
             }
         }
         private void SetVGPos(GameObject vg, Vector3 visualOffset, Vector3 toCamDir, Vector3 surfacePos)
