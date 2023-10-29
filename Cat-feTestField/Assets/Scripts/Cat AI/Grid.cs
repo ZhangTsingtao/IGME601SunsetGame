@@ -21,7 +21,8 @@ public class Grid : MonoBehaviour
 		CreateGrid();
 	}
 
-	void CreateGrid() {
+	public void CreateGrid() {
+		Debug.Log("Hello from Create Grid");
 		grid = new NextNode[gridSizeX,gridSizeY];
 		Vector3 worldBottomLeft = transform.position - Vector3.right * gridWorldSize.x/2 - Vector3.forward * gridWorldSize.y/2;
 
@@ -29,7 +30,7 @@ public class Grid : MonoBehaviour
 			for (int y = 0; y < gridSizeY; y ++) {
 				Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
 				bool openPath = !(Physics.CheckSphere(worldPoint,nodeRadius,unwalkableMask));
-                Debug.Log(openPath);
+                //Debug.Log(openPath);
 				grid[x,y] = new NextNode(openPath,worldPoint, x, y);
 			}
 		}
@@ -75,7 +76,7 @@ public class Grid : MonoBehaviour
             NextNode playerNode = NodeFromWorldPoint(player.position);
             
 		 	foreach (NextNode n in grid) {
-                Debug.Log(n.openPath);
+                //Debug.Log(n.openPath);
 		 		Gizmos.color = (n.openPath)?Color.yellow:Color.red;
                 if(playerNode == n){
                     Gizmos.color = Color.cyan;

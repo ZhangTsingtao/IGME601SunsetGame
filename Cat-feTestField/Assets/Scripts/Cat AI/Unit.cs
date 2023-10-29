@@ -22,17 +22,17 @@ public class Unit : MonoBehaviour
         // Check for user input to set a new target position
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("Roosa");
+            //Debug.Log("Roosa");
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            Debug.Log("Ray origin: " + ray.origin);
-            Debug.Log("Ray direction: " + ray.direction);
+            //Debug.Log("Ray origin: " + ray.origin);
+            //Debug.Log("Ray direction: " + ray.direction);
 
             if (Physics.Raycast(ray, out hit))
             {
-                Debug.Log("Hello Roosa");
+                //Debug.Log("Hello Roosa");
                 target = hit.point;
-                Debug.Log("New target position: " + target);
+                //Debug.Log("New target position: " + target);
                 PathManager.RequestPath(start.position,target, OnPathFound); // Recalculate the path to the new target
             }
         }

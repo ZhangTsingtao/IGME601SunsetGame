@@ -5,11 +5,12 @@ TagManager:
   serializedVersion: 2
   tags:
   - LevelEditorManager
+  - TagOfCollidersOfInterest
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Unwalkable
   - Water
   - UI
   - Build Surface
