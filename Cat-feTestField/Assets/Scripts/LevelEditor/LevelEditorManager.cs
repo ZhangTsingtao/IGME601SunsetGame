@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +21,8 @@ namespace TsingIGME601
         [SerializeField] private GameObject[] BuildSurfaces;
         private BuildSurfaceVisual _BSVBuffer;
 
+        //Communicate with Pathfinding
+        public static Action<Vector3> NewFurnitureAdded;
         private void Start()
         {
             HaveButtonPressed = false;
@@ -136,6 +139,8 @@ namespace TsingIGME601
                     GameObject item = Instantiate(itemController.ItemPrefab, Utility.GetGridPosition(hit), hit.transform.rotation);
                     RemoveItem removeItem = item.AddComponent<RemoveItem>();
                     removeItem.SetController(itemController);
+
+                    NewFurnitureAdded?.Invoke(item.transform.position);
                     HaveButtonPressed = false;
 
                     Destroy(ItemPreview);
