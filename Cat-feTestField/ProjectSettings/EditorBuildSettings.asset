@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Tsingtao/GridBuilding.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
+    path: Assets/Scenes/Roosa/1028AddFurniture_Bugs.unity
+    guid: abd0262caa2314ed7a3fe55ec30a1dea
   m_configObjects: {}
