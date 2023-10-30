@@ -108,6 +108,7 @@ public class Unit : MonoBehaviour
 
         while (Vector3.Distance(transform.position, currentWaypoint) > waypointProximity) {
             transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
+                transform.LookAt(currentWaypoint);
             yield return null;
         }
     }
