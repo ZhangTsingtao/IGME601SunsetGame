@@ -15,8 +15,8 @@ public class TestDelegateAction : MonoBehaviour
         LevelEditorManager.NewFurnitureAdded -= TestAction;
     }
 
-    private void TestAction(Vector3 position) 
+    private void TestAction() 
     {
-        Debug.Log("Action recieved, the position is: " + position);
+        Debug.Log("Action recieved, the position is: ");
     }
 }

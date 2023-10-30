@@ -7,7 +7,7 @@ namespace TsingIGME601
 {
     public class LevelEditorManager : MonoBehaviour
     {
-
+        
         [Header("Assign these two fields")]
         public Material _PreviewMatDenied;
         [SerializeField] private GameObject VisualGrid;
@@ -22,7 +22,8 @@ namespace TsingIGME601
         private BuildSurfaceVisual _BSVBuffer;
 
         //Communicate with Pathfinding
-        public static Action<Vector3> NewFurnitureAdded;
+        public static Action NewFurnitureAdded;
+        public static Action<bool> FurnitureUnderConstruction;
         private void Start()
         {
             HaveButtonPressed = false;
@@ -136,11 +137,16 @@ namespace TsingIGME601
                 {
                     //Build
                     itemController.Clicked = false;
-                    GameObject item = Instantiate(itemController.ItemPrefab, Utility.GetGridPosition(hit), hit.transform.rotation);
+                    GameObject item = Instantiate(itemController.ItemPrefab, Utility.GetGridPosition(hit), ItemPreview.transform.rotation);
                     RemoveItem removeItem = item.AddComponent<RemoveItem>();
                     removeItem.SetController(itemController);
 
-                    NewFurnitureAdded?.Invoke(item.transform.position);
+                    //change collider to isTrigger
+                    item.GetComponent<BoxCollider>().isTrigger = true;
+                    item.AddComponent<ObstacleUpdate>();
+
+                    NewFurnitureAdded?.Invoke();
+                    FurnitureUnderConstruction?.Invoke(false);
                     HaveButtonPressed = false;
 
                     Destroy(ItemPreview);

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TsingIGME601;
 using UnityEngine;
 
 public class ObstacleUpdate : MonoBehaviour
@@ -32,9 +33,13 @@ public class ObstacleUpdate : MonoBehaviour
     {
         // Initialize the previous position with the initial position of the collider
         previousPosition = transform.position;
-        
-    }
 
+        LevelEditorManager.NewFurnitureAdded += TryUpdateGrid;
+    }
+    private void OnDestroy()
+    {
+        LevelEditorManager.NewFurnitureAdded -= TryUpdateGrid;
+    }
     void Update()
     {
         // Check for changes in position
@@ -56,5 +61,15 @@ public class ObstacleUpdate : MonoBehaviour
         Grid grid = objectWithMyScript.GetComponent<Grid>();
         grid.CreateGrid();
         // Implement your desired actions or logic here when the collider's position changes
+    }
+
+    public void TryUpdateGrid()
+    {
+        Debug.Log("TryUpdateGrid");
+        // If the position has changed, call the function to handle the change
+        HandleColliderPositionChange();
+
+        // Update the previous position to the current position
+        previousPosition = transform.position;
     }
 }

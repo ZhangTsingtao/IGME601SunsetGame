@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8261744730568352589}
   - component: {fileID: 6143871168637802375}
   - component: {fileID: 8645198157293830540}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LandLamp
   m_TagString: Untagged
   m_Icon: {fileID: 0}

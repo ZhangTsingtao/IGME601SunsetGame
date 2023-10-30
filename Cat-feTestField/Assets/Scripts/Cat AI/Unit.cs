@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TsingIGME601;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
@@ -12,15 +13,29 @@ public class Unit : MonoBehaviour
 	Vector3[] path;
 	int targetIndex;
 
+    //communicate with leveleditor
+    private bool canNavigate = true;
+
 	void Start() {
         target = start.position;
 		PathManager.RequestPath(start.position,target, OnPathFound);
-	}
+
+        LevelEditorManager.FurnitureUnderConstruction += ToggleNavigation;
+    }
+    private void OnDestroy()
+    {
+        LevelEditorManager.FurnitureUnderConstruction -= ToggleNavigation;
+    }
+
+    private void ToggleNavigation(bool isBuilding)
+    {
+        canNavigate = !isBuilding;
+    }
 
     private void Update()
     {
         // Check for user input to set a new target position
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && canNavigate)
         {
             //Debug.Log("Roosa");
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

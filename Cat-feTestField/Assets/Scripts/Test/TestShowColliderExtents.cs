@@ -1,22 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
+using TsingIGME601;
 using UnityEngine;
 
 public class TestShowColliderExtents : MonoBehaviour
 {
-    Collider _col;
+    BoxCollider _col;
     private void Start()
     {
-        _col = GetComponent<Collider>();
+        _col = GetComponent<BoxCollider>();
     }
     private void Update()
     {
-        Debug.Log("extents : " + _col.bounds.extents);
+        Utility.DisplayBox
+            (
+                transform.TransformPoint(_col.center),
+                _col.bounds.extents,
+                Quaternion.identity
+            ) ;
     }
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawCube(transform.TransformPoint(Vector3.up * _col.bounds.extents.y / transform.localScale.y), _col.bounds.extents * 2);
-        //Vector3.up * _col.bounds.extents.y/transform.localScale.y
-    }
+   
 }

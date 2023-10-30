@@ -43,6 +43,8 @@ namespace TsingIGME601
                 _editor.SetController(this);
                 //Let manager instantiate a preview that follows the mouse
                 _editor.SpawnPreview();
+
+                LevelEditorManager.FurnitureUnderConstruction?.Invoke(true);
             }
         }
         public void AddQuantity()

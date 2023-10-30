@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7590892294723584742}
   - component: {fileID: 7590892294723584743}
   - component: {fileID: 7590892294723584737}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: CatCapsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -108,7 +108,7 @@ GameObject:
   - component: {fileID: 8809053200879277402}
   - component: {fileID: 5156495686569694822}
   - component: {fileID: 5274175384942897512}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}

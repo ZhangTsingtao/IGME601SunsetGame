@@ -20,6 +20,7 @@ namespace TsingIGME601
                 GetComponent<LevelEditorManager>();
         }
 
+        
         private void OnMouseOver()
         {
             if (Input.GetMouseButtonDown(1))
@@ -27,6 +28,16 @@ namespace TsingIGME601
                 _controller.AddQuantity();
                 Destroy(this.gameObject);
             }
+        }
+        private void OnDestroy()
+        {
+            Debug.Log("Furniture Destroyed, the grid should be updated");
+            GameObject objectWithMyScript = GameObject.Find("A*");
+            if (objectWithMyScript != null)
+            {
+                Grid grid = objectWithMyScript.GetComponent<Grid>();
+                grid.CreateGrid();
+            } 
         }
     }
 }

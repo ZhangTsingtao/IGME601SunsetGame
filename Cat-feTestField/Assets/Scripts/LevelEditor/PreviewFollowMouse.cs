@@ -11,7 +11,7 @@ namespace TsingIGME601
     {
         public LevelEditorManager _editor;
 
-        private Collider _collider;
+        private BoxCollider _collider;
 
         public bool _placeable = false;
         public Material _previewDeniedMaterial;
@@ -22,7 +22,7 @@ namespace TsingIGME601
         [SerializeField] private int _rotationDegree = 0;
         private void Start()
         {
-            _collider = gameObject.GetComponent<Collider>();
+            _collider = gameObject.GetComponent<BoxCollider>();
 
             _materials = GetComponent<MeshRenderer>().materials;
             _originalColorBuffer = new Color[_materials.Length];
@@ -97,7 +97,7 @@ namespace TsingIGME601
         {
             if (Vector3.Angle(transform.up, targetTransform.up) > 10)
             {
-                Debug.Log("Angle greater than 10");
+                //Debug.Log("Angle greater than 10");
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, targetTransform.rotation, 180f);
             }
             if (_rotationDegree != 0)
@@ -121,10 +121,20 @@ namespace TsingIGME601
         { 
             int hitAmount = 0;
             hitAmount = Physics.OverlapBoxNonAlloc
-                (transform.TransformPoint(Vector3.up * _collider.bounds.extents.y / transform.localScale.y), 
-                _collider.bounds.extents / 2,
-                _colBuffer);
-            //if overlap
+                (
+                    transform.TransformPoint(_collider.center),
+                    _collider.bounds.extents * 0.9f,
+                    _colBuffer,
+                    Quaternion.identity
+                );
+
+            Utility.DisplayBox
+                (
+                    transform.TransformPoint(_collider.center),
+                    _collider.bounds.extents * 0.9f, 
+                    Quaternion.identity
+                );
+
             if (hitAmount > 1)//itself is also included. so start from 1 rather than 0
             {
                 if (_placeable)
