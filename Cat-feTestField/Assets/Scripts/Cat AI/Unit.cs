@@ -13,6 +13,10 @@ public class Unit : MonoBehaviour
 	Vector3[] path;
 	int targetIndex;
 
+    bool completingAction;
+    Vector3 targetLocation;
+    Vector3 previousLocation;
+
     //communicate with leveleditor
     private bool canNavigate = true;
 
@@ -21,6 +25,9 @@ public class Unit : MonoBehaviour
 		PathManager.RequestPath(start.position,target, OnPathFound);
 
         LevelEditorManager.FurnitureUnderConstruction += ToggleNavigation;
+
+        completingAction = false;
+        previousLocation = start.position;
     }
     private void OnDestroy()
     {
@@ -34,23 +41,71 @@ public class Unit : MonoBehaviour
 
     private void Update()
     {
+        //Wander();
         // Check for user input to set a new target position
         if (Input.GetMouseButtonDown(0) && canNavigate)
         {
-            //Debug.Log("Roosa");
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            //Debug.Log("Ray origin: " + ray.origin);
-            //Debug.Log("Ray direction: " + ray.direction);
-
-            if (Physics.Raycast(ray, out hit))
-            {
-                //Debug.Log("Hello Roosa");
-                target = hit.point;
-                //Debug.Log("New target position: " + target);
-                PathManager.RequestPath(start.position,target, OnPathFound); // Recalculate the path to the new target
-            }
+            ClickedLocation();
         }
+    }
+
+    public void InvestigateObject()
+    {
+
+    }
+
+    public void Wander()
+    {
+        if (!completingAction)
+        {
+            //Debug.Log("Finding new location");
+            //Find new random location to wander to
+            targetLocation = new Vector3(Random.Range(-4.0f, 4.0f), 0f, Random.Range(-4.0f, 4.0f));
+
+            //Speed of how fast the cat will move to this location
+            speed = Random.Range(1f, 3f);
+
+            //Debug.Log(targetLocation);
+
+            //Move to new location and set completing action to true
+            MoveTo(targetLocation);
+            completingAction = true;
+        }
+        else
+        {
+            //Checks to see if it stops moving
+            if(start.position == previousLocation)
+            {
+                completingAction = false;
+            }
+
+            //Update the previous location with the current one
+            previousLocation = start.position;
+        }
+    }
+
+    public void ClickedLocation()
+    {
+        //Debug.Log("Roosa");
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        //Debug.Log("Ray origin: " + ray.origin);
+        //Debug.Log("Ray direction: " + ray.direction);
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            //Debug.Log("Hello Roosa");
+            target = hit.point;
+            //Debug.Log("New target position: " + target);
+            MoveTo(target);
+            //PathManager.RequestPath(start.position, target, OnPathFound); // Recalculate the path to the new target
+        }
+    }
+
+    private void MoveTo(Vector3 goalLocation)
+    {
+
+        PathManager.RequestPath(start.position, goalLocation, OnPathFound); // Recalculate the path to the new target
     }
 
 	public void OnPathFound(Vector3[] newPath, bool pathSuccessful) {

@@ -12,7 +12,7 @@ public class BTSetup : MonoBehaviour
 
     protected BehaviorTree LinkedBT;
     //Cat Script 
-    //protected CatAgent Agent;
+    protected Unit Cat;
     //Awareness System
     //protected AwarenessSystem Sensors;
 
