@@ -13,6 +13,8 @@ public class Unit : MonoBehaviour
 	Vector3[] path;
 	int targetIndex;
 
+    public float catHeight;
+
     bool completingAction;
     Vector3 targetLocation;
     Vector3 previousLocation;
@@ -28,6 +30,8 @@ public class Unit : MonoBehaviour
 
         completingAction = false;
         previousLocation = start.position;
+
+        catHeight = 1;
     }
     private void OnDestroy()
     {
@@ -160,6 +164,7 @@ public class Unit : MonoBehaviour
 
     for (int i = 0; i < pathLength; i++) {
         currentWaypoint = path[i];
+        currentWaypoint.y = catHeight;
 
         while (Vector3.Distance(transform.position, currentWaypoint) > waypointProximity) {
             transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);

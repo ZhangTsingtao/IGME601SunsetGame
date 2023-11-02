@@ -91,7 +91,7 @@ namespace TsingIGME601
                 float normalLength = boundSizes[axis] / 2 + 0.01f;
                 Vector3 surfacePos = BuildSurfaces[i].transform.position;
                 Vector3 toCamDir = Camera.main.transform.position - BuildSurfaces[i].transform.position;
-                Vector3 visualOffset = new();
+                Vector3 visualOffset = new Vector3();
                 switch (axis)
                 {
                     case 0:
@@ -143,7 +143,6 @@ namespace TsingIGME601
 
                     //change collider to isTrigger
                     item.GetComponent<BoxCollider>().isTrigger = true;
-                    item.AddComponent<ObstacleUpdate>();
 
                     NewFurnitureAdded?.Invoke();
                     FurnitureUnderConstruction?.Invoke(false);
