@@ -7,17 +7,11 @@ namespace TsingIGME601
     public class RemoveItem : MonoBehaviour
     {
         public ItemController _controller;
-        private LevelEditorManager _editor;
+
 
         public void SetController(ItemController controller)
         {
             _controller = controller;
-        }
-
-        void Start()
-        {
-            _editor = GameObject.FindGameObjectWithTag("LevelEditorManager").
-                GetComponent<LevelEditorManager>();
         }
 
         
@@ -31,13 +25,8 @@ namespace TsingIGME601
         }
         private void OnDestroy()
         {
-            Debug.Log("Furniture Destroyed, the grid should be updated");
-            GameObject objectWithMyScript = GameObject.Find("A*");
-            if (objectWithMyScript != null)
-            {
-                Grid grid = objectWithMyScript.GetComponent<Grid>();
-                grid.CreateGrid();
-            } 
+            //Debug.Log("Furniture Destroyed, the grid should be updated");
+            LevelEditorManager.FurnitureUpdated?.Invoke();
         }
     }
 }

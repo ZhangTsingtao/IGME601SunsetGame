@@ -9,8 +9,6 @@ namespace TsingIGME601
 {
     public class PreviewFollowMouse : MonoBehaviour
     {
-        public LevelEditorManager _editor;
-
         private BoxCollider _collider;
 
         public bool _placeable = false;
@@ -82,7 +80,7 @@ namespace TsingIGME601
                 SetRotation(hit.transform);
 
                 //the surface also shows its visual grid
-                _editor.ShowVisualGrid(hit.transform.GetComponent<BuildSurfaceVisual>());
+                LevelEditorManager.Instance.ShowVisualGrid(hit.transform.GetComponent<BuildSurfaceVisual>());
             }
             else
             {
@@ -90,7 +88,7 @@ namespace TsingIGME601
 
                 transform.position = new Vector3(worldPos.x, worldPos.y, worldPos.z) + Camera.main.transform.forward * 10;
 
-                _editor.ClearVisualGrid();
+                LevelEditorManager.Instance.ClearVisualGrid();
             }
         }
         private void SetRotation(Transform targetTransform)

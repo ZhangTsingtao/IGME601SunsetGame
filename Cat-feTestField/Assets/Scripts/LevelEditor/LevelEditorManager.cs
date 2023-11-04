@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace TsingIGME601
@@ -22,8 +23,26 @@ namespace TsingIGME601
         private BuildSurfaceVisual _BSVBuffer;
 
         //Communicate with Pathfinding
-        public static Action NewFurnitureAdded;
-        public static Action<bool> FurnitureUnderConstruction;
+        public static Action FurnitureUpdated;//called when a furniture is built/removed
+        public static Action<bool> FurnitureBuilding;//This event is to toggle the navigation on/off
+
+
+#region Singleton
+        private static LevelEditorManager _instance;
+        public static LevelEditorManager Instance { get { return _instance; } }
+
+        private void Awake()
+        {
+            if (_instance != null && _instance != this)
+            {
+                Destroy(this.gameObject);
+            }
+            else
+            {
+                _instance = this;
+            }
+        }
+#endregion
         private void Start()
         {
             HaveButtonPressed = false;
@@ -144,12 +163,12 @@ namespace TsingIGME601
                     //change collider to isTrigger
                     item.GetComponent<BoxCollider>().isTrigger = true;
 
-                    NewFurnitureAdded?.Invoke();
-                    FurnitureUnderConstruction?.Invoke(false);
+                    FurnitureUpdated?.Invoke();
+                    FurnitureBuilding?.Invoke(false);
                     HaveButtonPressed = false;
 
                     Destroy(ItemPreview);
-                    ClearController();
+                    itemController = null;
                 }
                 //Disable Visual Grid
                 _BSVBuffer.VisualGrid.SetActive(false);
@@ -164,7 +183,7 @@ namespace TsingIGME601
             ItemPreview = Instantiate(itemController.ItemPrefab, worldPos, Quaternion.identity);
             ItemPreview.SetActive(true);
             var previewScript = ItemPreview.AddComponent<PreviewFollowMouse>();
-            previewScript._editor = this;
+            
             //assign the preview denied material
             previewScript._previewDeniedMaterial = _PreviewMatDenied;
 
@@ -175,20 +194,21 @@ namespace TsingIGME601
             //not constantly changing its position
             int LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
             ItemPreview.layer = LayerIgnoreRaycast;
-
-            //Assign this manager script to ItemPreview,
-            //so that it has reference to all grids
-            ItemPreview.GetComponent<PreviewFollowMouse>()._editor = this;
-
         }
         
         public void CancelBuild()
         {
             Destroy(ItemPreview);
-            itemController.AddQuantity();
             HaveButtonPressed = false;
+
+            itemController.AddQuantity();
             itemController.Clicked = false;
-            ClearController();
+            itemController = null;
+
+            FurnitureBuilding?.Invoke(false);
+
+            //Disable Visual Grid
+            _BSVBuffer.VisualGrid.SetActive(false);
         }
         public void SetController(ItemController controller)
         {
@@ -197,7 +217,6 @@ namespace TsingIGME601
                 itemController = controller;
             }
         }
-        public void ClearController() { itemController = null; }
         
         public void ShowVisualGrid(BuildSurfaceVisual buildSurface)
         {

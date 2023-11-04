@@ -14,7 +14,7 @@ namespace TsingIGME601
         public bool Clicked = false;
 
         private Button _button;
-        private LevelEditorManager _editor;
+        
         void Start()
         {
             quantityText = GetComponentInChildren<TextMeshProUGUI>();
@@ -24,28 +24,32 @@ namespace TsingIGME601
             
             //Get the LevelEditorManager
             //Maybe need change from finding by tag, but let's keep it for now
-            _editor = GameObject.FindGameObjectWithTag("LevelEditorManager").
-                GetComponent<LevelEditorManager>();
+
         }
 
         public void ButtonClicked()
         {
             //check anything left, and if the manager is free (no other assets being clicked)
-            if (quantity > 0 && _editor.HaveButtonPressed == false)
+            if (quantity <= 0) return;
+            if (LevelEditorManager.Instance.HaveButtonPressed == true) 
             {
-                //not clickable until placed, and change quantity left
-                Clicked = true;
-                MinusQuantity();
-
-                //couple with LevelEditorManager
-                //let manager get the right one
-                _editor.HaveButtonPressed = true;
-                _editor.SetController(this);
-                //Let manager instantiate a preview that follows the mouse
-                _editor.SpawnPreview();
-
-                LevelEditorManager.FurnitureUnderConstruction?.Invoke(true);
+                LevelEditorManager.Instance.CancelBuild();
             }
+            
+            //not clickable until placed, and change quantity left
+            Clicked = true;
+            MinusQuantity();
+
+            //couple with LevelEditorManager
+            //let manager get the right one
+            LevelEditorManager.Instance.HaveButtonPressed = true;
+            LevelEditorManager.Instance.SetController(this);
+            //Let manager instantiate a preview that follows the mouse
+            LevelEditorManager.Instance.SpawnPreview();
+
+            //This event is to toggle the navigation on/off
+            LevelEditorManager.FurnitureBuilding?.Invoke(true);
+
         }
         public void AddQuantity()
         {
@@ -57,7 +61,6 @@ namespace TsingIGME601
             quantity--;
             quantityText.text = quantity.ToString();
         }
-
     }
 }
 

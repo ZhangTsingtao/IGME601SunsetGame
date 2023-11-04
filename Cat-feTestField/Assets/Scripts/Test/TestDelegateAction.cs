@@ -8,11 +8,11 @@ public class TestDelegateAction : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        LevelEditorManager.NewFurnitureAdded += TestAction;
+        LevelEditorManager.FurnitureUpdated += TestAction;
     }
     private void OnDisable()
     {
-        LevelEditorManager.NewFurnitureAdded -= TestAction;
+        LevelEditorManager.FurnitureUpdated -= TestAction;
     }
 
     private void TestAction() 

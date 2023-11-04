@@ -34,11 +34,11 @@ public class ObstacleUpdate : MonoBehaviour
         // Initialize the previous position with the initial position of the collider
         previousPosition = transform.position;
 
-        LevelEditorManager.NewFurnitureAdded += TryUpdateGrid;
+        LevelEditorManager.FurnitureUpdated += TryUpdateGrid;
     }
     private void OnDestroy()
     {
-        LevelEditorManager.NewFurnitureAdded -= TryUpdateGrid;
+        LevelEditorManager.FurnitureUpdated -= TryUpdateGrid;
     }
     void Update()
     {

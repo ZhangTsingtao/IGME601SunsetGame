@@ -26,7 +26,7 @@ public class Unit : MonoBehaviour
         target = start.position;
 		PathManager.RequestPath(start.position,target, OnPathFound);
 
-        LevelEditorManager.FurnitureUnderConstruction += ToggleNavigation;
+        LevelEditorManager.FurnitureBuilding += ToggleNavigation;
 
         completingAction = false;
         previousLocation = start.position;
@@ -35,7 +35,7 @@ public class Unit : MonoBehaviour
     }
     private void OnDestroy()
     {
-        LevelEditorManager.FurnitureUnderConstruction -= ToggleNavigation;
+        LevelEditorManager.FurnitureBuilding -= ToggleNavigation;
     }
 
     private void ToggleNavigation(bool isBuilding)
