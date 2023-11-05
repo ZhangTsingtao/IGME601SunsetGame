@@ -8,8 +8,7 @@ namespace TsingIGME601
 {
     public class LevelEditorManager : MonoBehaviour
     {
-        
-        [Header("Assign these two fields")]
+        [Header("Assign these fields")]
         public Material _PreviewMatDenied;
         [SerializeField] private GameObject VisualGrid;
         [Header("The rest is generated")]
@@ -148,31 +147,32 @@ namespace TsingIGME601
 
         public void BuildFurniture()
         {
-            if(ItemPreview != null && ItemPreview.GetComponent<PreviewFollowMouse>()._placeable)
+            if (ItemPreview == null) return;
+            if (ItemPreview.GetComponent<PreviewFollowMouse>()._placeable == false) return;
+
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            int layer_mask = LayerMask.GetMask("Build Surface");
+            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layer_mask))
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                int layer_mask = LayerMask.GetMask("Build Surface");
-                if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layer_mask))
-                {
-                    //Build
-                    itemController.Clicked = false;
-                    GameObject item = Instantiate(itemController.ItemPrefab, Utility.GetGridPosition(hit), ItemPreview.transform.rotation);
-                    RemoveItem removeItem = item.AddComponent<RemoveItem>();
-                    removeItem.SetController(itemController);
+                //Build
+                itemController.Clicked = false;
+                GameObject item = Instantiate(itemController.ItemPrefab, ItemPreview.transform.position, ItemPreview.transform.rotation);
+                RemoveItem removeItem = item.AddComponent<RemoveItem>();
+                removeItem.SetController(itemController);
 
-                    //change collider to isTrigger
-                    item.GetComponent<BoxCollider>().isTrigger = true;
+                //change collider to isTrigger
+                item.GetComponent<BoxCollider>().isTrigger = true;
 
-                    FurnitureUpdated?.Invoke();
-                    FurnitureBuilding?.Invoke(false);
-                    HaveButtonPressed = false;
+                FurnitureUpdated?.Invoke();
+                FurnitureBuilding?.Invoke(false);
+                HaveButtonPressed = false;
 
-                    Destroy(ItemPreview);
-                    itemController = null;
-                }
-                //Disable Visual Grid
-                _BSVBuffer.VisualGrid.SetActive(false);
+                Destroy(ItemPreview);
+                itemController = null;
             }
+            //Disable Visual Grid
+            _BSVBuffer.VisualGrid.SetActive(false);
+
         }
 
         //called by controller (the button with the image)

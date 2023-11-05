@@ -71,6 +71,7 @@ namespace TsingIGME601
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             int layer_mask = LayerMask.GetMask("Build Surface");
+            //layer_mask += LayerMask.GetMask("Unwalkable");
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layer_mask))
             {
                 //get grid position

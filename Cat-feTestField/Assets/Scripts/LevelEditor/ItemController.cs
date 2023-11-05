@@ -31,11 +31,9 @@ namespace TsingIGME601
         {
             //check anything left, and if the manager is free (no other assets being clicked)
             if (quantity <= 0) return;
-            if (LevelEditorManager.Instance.HaveButtonPressed == true) 
-            {
+            if (LevelEditorManager.Instance.HaveButtonPressed == true)
                 LevelEditorManager.Instance.CancelBuild();
-            }
-            
+
             //not clickable until placed, and change quantity left
             Clicked = true;
             MinusQuantity();
@@ -49,6 +47,8 @@ namespace TsingIGME601
 
             //This event is to toggle the navigation on/off
             LevelEditorManager.FurnitureBuilding?.Invoke(true);
+            
+            return;
 
         }
         public void AddQuantity()
