@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 namespace TsingIGME601
 {
@@ -11,6 +12,8 @@ namespace TsingIGME601
         [Header("Assign these fields")]
         public Material _PreviewMatDenied;
         [SerializeField] private GameObject VisualGrid;
+        [Header("Assign this game object, to store all build surfaces and furniture")]
+        public GameObject RoomLayout;
         [Header("The rest is generated")]
         public ItemController itemController;
         
@@ -18,7 +21,7 @@ namespace TsingIGME601
 
         [SerializeField] private GameObject ItemPreview;
         
-        [SerializeField] private GameObject[] BuildSurfaces;
+        [SerializeField] private List<GameObject> BuildSurfaces;
         private BuildSurfaceVisual _BSVBuffer;
 
         //Communicate with Pathfinding
@@ -69,75 +72,97 @@ namespace TsingIGME601
         private void AddVisualGrid()
         {
             Collider[] cols = Physics.OverlapSphere(Vector3.zero, 1000f, LayerMask.GetMask("Build Surface"));
-            BuildSurfaces = new GameObject[cols.Length];
+            BuildSurfaces = new();
             for (int i = 0; i < cols.Length; i++)
             {
                 //Add visual grid to the build surface as a child
-                BuildSurfaces[i] = cols[i].gameObject;
-                
-                GameObject vg = Instantiate(VisualGrid);
-                vg.transform.parent = BuildSurfaces[i].transform.parent.transform;
+                BuildSurfaces.Add(cols[i].gameObject);
+               
+                AddOneVisualGridForSurface(i);
+            }
+        }
+        private void AddOneVisualGridForSurface(int i)
+        {
+            GameObject vg = Instantiate(VisualGrid);
+            vg.transform.parent = BuildSurfaces[i].transform.parent.transform;
 
-                BuildSurfaceVisual build = BuildSurfaces[i].AddComponent<BuildSurfaceVisual>();
-                build.VisualGrid = vg;
-                
+            BuildSurfaceVisual build = BuildSurfaces[i].AddComponent<BuildSurfaceVisual>();
+            build.VisualGrid = vg;
 
-                //choose the thinnest axis of the BuildSurface's collider
-                BoxCollider bCol = BuildSurfaces[i].GetComponent<BoxCollider>();
-                int axis = 0;
-                if (bCol == null) continue;
+            //choose the thinnest axis of the BuildSurface's collider
+            BoxCollider bCol = BuildSurfaces[i].GetComponent<BoxCollider>();
+            int axis = 0;
+            if (bCol == null) return;
 
-                float[] boundSizes = {bCol.bounds.size.x,
+            float[] boundSizes = {bCol.bounds.size.x,
                                       bCol.bounds.size.y,
                                       bCol.bounds.size.z};
 
-                float min = boundSizes[0];
-                for (int j = 0; j < boundSizes.Length; j++)
+            float min = boundSizes[0];
+            for (int j = 0; j < boundSizes.Length; j++)
+            {
+                Debug.Log(j + "  " + BuildSurfaces[i] + "  " + boundSizes[j]);
+                if (boundSizes[j] < min)
                 {
-                    Debug.Log(j + "  " + BuildSurfaces[i] + "  " + boundSizes[j]);
-                    if (boundSizes[j] < min)
-                    {
-                        min = boundSizes[j];
-                        axis = j;
-                    }
+                    min = boundSizes[j];
+                    axis = j;
                 }
-
-                Debug.Log(axis.ToString());
-
-                //set position, rotation based on the BuildSurface's collider bounding box
-                //the visual grid snaps to the thinnest side of the collider
-                float normalLength = boundSizes[axis] / 2 + 0.01f;
-                Vector3 surfacePos = BuildSurfaces[i].transform.position;
-                Vector3 toCamDir = Camera.main.transform.position - BuildSurfaces[i].transform.position;
-                Vector3 visualOffset = new Vector3();
-                switch (axis)
-                {
-                    case 0:
-                        visualOffset = new Vector3(normalLength, 0, 0);
-                        SetVGPos(vg, visualOffset, toCamDir, surfacePos);
-
-                        vg.transform.rotation = Quaternion.Euler(0, 0, 90);
-                        if (Vector3.Dot(vg.transform.up, toCamDir) < 0)
-                            vg.transform.rotation = Quaternion.Euler(0, 0, -90);
-                        break;
-                    case 1:
-                        visualOffset = new Vector3(0, normalLength, 0);
-                        SetVGPos(vg, visualOffset, toCamDir, surfacePos);
-                        break;
-                    case 2:
-                        visualOffset = new Vector3(0, 0, normalLength);
-                        SetVGPos(vg, visualOffset, toCamDir, surfacePos);
-
-                        vg.transform.rotation = Quaternion.Euler(90, 0, 0);
-                        if (Vector3.Dot(vg.transform.up, toCamDir) < 0)
-                            vg.transform.rotation = Quaternion.Euler(-90, 0, 0);
-                        break;
-                }
-
-                vg.SetActive(false);
-
             }
+
+            Debug.Log(axis.ToString());
+
+            //set position, rotation based on the BuildSurface's collider bounding box
+            //the visual grid snaps to the thinnest side of the collider
+            float normalLength = boundSizes[axis] / 2 + 0.01f;
+            Vector3 surfacePos = BuildSurfaces[i].transform.position;
+            Vector3 toCamDir = Camera.main.transform.position - BuildSurfaces[i].transform.position;
+            Vector3 visualOffset = new Vector3();
+            switch (axis)
+            {
+                case 0:
+                    visualOffset = new Vector3(normalLength, 0, 0);
+                    SetVGPos(vg, visualOffset, toCamDir, surfacePos);
+
+                    vg.transform.rotation = Quaternion.Euler(0, 0, 90);
+                    if (Vector3.Dot(vg.transform.up, toCamDir) < 0)
+                        vg.transform.rotation = Quaternion.Euler(0, 0, -90);
+                    break;
+                case 1:
+                    visualOffset = new Vector3(0, normalLength, 0);
+                    SetVGPos(vg, visualOffset, toCamDir, surfacePos);
+                    break;
+                case 2:
+                    visualOffset = new Vector3(0, 0, normalLength);
+                    SetVGPos(vg, visualOffset, toCamDir, surfacePos);
+
+                    vg.transform.rotation = Quaternion.Euler(90, 0, 0);
+                    if (Vector3.Dot(vg.transform.up, toCamDir) < 0)
+                        vg.transform.rotation = Quaternion.Euler(-90, 0, 0);
+                    break;
+            }
+            vg.SetActive(false);
         }
+        private void AddOneVisualGridForFurniture(int i)
+        {
+            BuildSurfaces[i].AddComponent<Grid>();
+
+            GameObject vg = Instantiate(VisualGrid);
+            vg.transform.parent = BuildSurfaces[i].transform.parent.transform;
+
+            BuildSurfaceVisual build = BuildSurfaces[i].AddComponent<BuildSurfaceVisual>();
+            build.VisualGrid = vg;
+
+            //find y axis of the furniture's collider
+            BoxCollider bCol = BuildSurfaces[i].GetComponent<BoxCollider>();
+            
+            vg.transform.position = bCol.transform.position;
+            vg.transform.position += bCol.transform.up * bCol.size.y;
+            vg.transform.up = bCol.transform.up;
+
+            vg.SetActive(false);
+        }
+
+        //For build surfaces, not furniture
         private void SetVGPos(GameObject vg, Vector3 visualOffset, Vector3 toCamDir, Vector3 surfacePos)
         {
             vg.transform.position = Vector3.Dot(visualOffset, toCamDir) >= 0 ? visualOffset : -visualOffset;
@@ -152,6 +177,7 @@ namespace TsingIGME601
 
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             int layer_mask = LayerMask.GetMask("Build Surface");
+            layer_mask += LayerMask.GetMask("Unwalkable");
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layer_mask))
             {
                 //Build
@@ -159,6 +185,7 @@ namespace TsingIGME601
                 GameObject item = Instantiate(itemController.ItemPrefab, ItemPreview.transform.position, ItemPreview.transform.rotation);
                 RemoveItem removeItem = item.AddComponent<RemoveItem>();
                 removeItem.SetController(itemController);
+                item.transform.parent = RoomLayout.transform;
 
                 //change collider to isTrigger
                 item.GetComponent<BoxCollider>().isTrigger = true;
@@ -169,6 +196,14 @@ namespace TsingIGME601
 
                 Destroy(ItemPreview);
                 itemController = null;
+
+                //Build on top of furniture
+                if(item.TryGetComponent<AbleToBuiltOn>(out AbleToBuiltOn component))
+                {
+                    BuildSurfaces.Add(item);
+                    
+                    AddOneVisualGridForFurniture(BuildSurfaces.Count - 1);
+                }
             }
             //Disable Visual Grid
             _BSVBuffer.VisualGrid.SetActive(false);
@@ -220,6 +255,11 @@ namespace TsingIGME601
         
         public void ShowVisualGrid(BuildSurfaceVisual buildSurface)
         {
+            if (buildSurface.VisualGrid == null)
+            {
+                Debug.LogWarning("No visual grid found!");
+                return;
+            }
             if (_BSVBuffer != buildSurface)
             {
                 buildSurface.VisualGrid.SetActive(true);
@@ -237,6 +277,10 @@ namespace TsingIGME601
         public void ClearVisualGrid()
         {
             _BSVBuffer.VisualGrid.SetActive(false);
+        }
+        public void RemoveFromBuildSurfaces(GameObject obj)
+        {
+            BuildSurfaces.Remove(obj);
         }
     }
 }

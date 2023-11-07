@@ -6,15 +6,8 @@ namespace TsingIGME601
 {
     public class AbleToBuiltOn : MonoBehaviour
     {
-        void Start()
-        {
-            Invoke("AddGrid", 1f);
-        }
-
-        void AddGrid()
-        {
-            transform.AddComponent<Grid>();
-        }
+        //This is just a mark
+        //attach this script to the furniture you want to be able to be built upon.
     }
 
 }

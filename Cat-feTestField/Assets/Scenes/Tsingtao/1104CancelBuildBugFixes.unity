@@ -3622,6 +3622,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _PreviewMatDenied: {fileID: 2100000, guid: fd2b50e2d5dc2fd48945d0a9b5e56df0, type: 2}
   VisualGrid: {fileID: 5988762622828484331, guid: cc4fa65f398a14a41a65ee2709367ff1, type: 3}
+  RoomLayout: {fileID: 1070824075}
   itemController: {fileID: 0}
   HaveButtonPressed: 255
   ItemPreview: {fileID: 0}

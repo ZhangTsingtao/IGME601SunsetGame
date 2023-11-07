@@ -17,6 +17,8 @@ namespace TsingIGME601
         
         private void OnMouseOver()
         {
+            if (LevelEditorManager.Instance.HaveButtonPressed)
+                return;
             if (Input.GetMouseButtonDown(1))
             {
                 _controller.AddQuantity();
@@ -25,6 +27,10 @@ namespace TsingIGME601
         }
         private void OnDestroy()
         {
+            if (transform.TryGetComponent<AbleToBuiltOn>(out AbleToBuiltOn component))
+            {
+                LevelEditorManager.Instance.RemoveFromBuildSurfaces(transform.gameObject);
+            }
             //Debug.Log("Furniture Destroyed, the grid should be updated");
             LevelEditorManager.FurnitureUpdated?.Invoke();
         }

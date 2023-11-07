@@ -71,7 +71,7 @@ namespace TsingIGME601
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             int layer_mask = LayerMask.GetMask("Build Surface");
-            //layer_mask += LayerMask.GetMask("Unwalkable");
+            layer_mask += LayerMask.GetMask("Unwalkable");
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layer_mask))
             {
                 //get grid position
@@ -81,7 +81,10 @@ namespace TsingIGME601
                 SetRotation(hit.transform);
 
                 //the surface also shows its visual grid
-                LevelEditorManager.Instance.ShowVisualGrid(hit.transform.GetComponent<BuildSurfaceVisual>());
+                if(hit.transform.TryGetComponent<BuildSurfaceVisual>(out BuildSurfaceVisual bsv))
+                {
+                    LevelEditorManager.Instance.ShowVisualGrid(bsv);
+                }  
             }
             else
             {
