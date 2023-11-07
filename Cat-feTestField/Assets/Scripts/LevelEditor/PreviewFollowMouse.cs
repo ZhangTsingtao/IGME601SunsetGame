@@ -78,7 +78,7 @@ namespace TsingIGME601
                 transform.position = Utility.GetGridPosition(hit);
 
                 //update rotation
-                SetRotation(hit.transform);
+                SetRotation(hit.transform, hit);
 
                 //the surface also shows its visual grid
                 if(hit.transform.TryGetComponent<BuildSurfaceVisual>(out BuildSurfaceVisual bsv))
@@ -95,20 +95,26 @@ namespace TsingIGME601
                 LevelEditorManager.Instance.ClearVisualGrid();
             }
         }
-        private void SetRotation(Transform targetTransform)
+        private void SetRotation(Transform targetTransform, RaycastHit hit)
         {
-            if (Vector3.Angle(transform.up, targetTransform.up) > 10)
-            {
-                //Debug.Log("Angle greater than 10");
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetTransform.rotation, 180f);
-            }
-            if (_rotationDegree != 0)
-            {
-                transform.rotation = transform.rotation * Quaternion.AngleAxis(_rotationDegree, Vector3.up);
-                _rotationDegree = 0;
-            }
-        }
+            transform.up = hit.normal;
 
+            transform.rotation = transform.rotation * Quaternion.AngleAxis(_rotationDegree, Vector3.up);
+        }
+        //private void SetRotation(Transform targetTransform, RaycastHit hit)
+        //{
+        //    transform.up = hit.normal;
+        //    if (Vector3.Angle(transform.up, targetTransform.up) > 10)
+        //    {
+        //        //Debug.Log("Angle greater than 10");
+        //        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetTransform.rotation, 180f);
+        //    }
+        //    if (_rotationDegree != 0)
+        //    {
+        //        transform.rotation = transform.rotation * Quaternion.AngleAxis(_rotationDegree, Vector3.up);
+        //        _rotationDegree = 0;
+        //    }
+        //}
 
         private void OnDrawGizmosSelected()
         {
