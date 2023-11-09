@@ -10,18 +10,18 @@ namespace TsingIGME601
         //Take a RaycastHit, then see if there's a grid component
         //if there is, then return the grid position
         //if not, just return the original hit position
-        public static Vector3 GetGridPosition(RaycastHit hit)
+        public static (Vector3, bool) GetGridPosition(RaycastHit hit)
         {
             GridLayout gridLayout = hit.transform.GetComponentInChildren<GridLayout>();
 
             if (gridLayout == null)
             {
                 Debug.LogWarning("Can't find any grid on Raycast hit");
-                return hit.point;
+                return (hit.point, false);
             }
             
             Vector3Int cellPosition = gridLayout.WorldToCell(hit.point);
-            return gridLayout.CellToWorld(cellPosition);
+            return (gridLayout.CellToWorld(cellPosition), true);
         }
         public static Material MaterialOpaqueToTransparent(Material material, float alphaValue)
         {

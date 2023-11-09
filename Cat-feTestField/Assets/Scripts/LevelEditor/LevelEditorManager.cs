@@ -11,7 +11,7 @@ namespace TsingIGME601
     {
         [Header("Assign these fields")]
         public Material _PreviewMatDenied;
-        [SerializeField] private GameObject VisualGrid;
+        public GameObject VisualGrid;
         [Header("Assign this game object, to store all build surfaces and furniture")]
         public GameObject RoomLayout;
         [Header("The rest is generated")]
@@ -22,14 +22,18 @@ namespace TsingIGME601
         [SerializeField] private GameObject ItemPreview;
         
         [SerializeField] private List<GameObject> BuildSurfaces;
-        private BuildSurfaceVisual _BSVBuffer;
+        //private BuildSurfaceVisual _BSVBuffer;
 
         //Communicate with Pathfinding
         public static Action FurnitureUpdated;//called when a furniture is built/removed
         public static Action<bool> FurnitureBuilding;//This event is to toggle the navigation on/off
 
+        private void Start()
+        {
+            HaveButtonPressed = false;
+        }
 
-#region Singleton
+        #region Singleton
         private static LevelEditorManager _instance;
         public static LevelEditorManager Instance { get { return _instance; } }
 
@@ -45,13 +49,7 @@ namespace TsingIGME601
             }
         }
 #endregion
-        private void Start()
-        {
-            HaveButtonPressed = false;
-            
-            AddVisualGrid();
-            _BSVBuffer = BuildSurfaces[0].GetComponent<BuildSurfaceVisual>();
-        }
+
         private void Update()
         {
             if (HaveButtonPressed) //if a button is pressed
@@ -170,6 +168,26 @@ namespace TsingIGME601
             Debug.Log(Vector3.Dot(visualOffset, toCamDir));
         }
 
+        public void SpawnPreview()
+        {
+            //instantiate a preview that follows the mouse
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            ItemPreview = Instantiate(itemController.ItemPrefab, worldPos, Quaternion.identity);
+            ItemPreview.SetActive(true);
+            var previewScript = ItemPreview.AddComponent<PreviewFollowMouse>();
+
+            //assign the preview denied material
+            previewScript._previewDeniedMaterial = _PreviewMatDenied;
+
+            //materials are changed to transparent at the Start of PreviewFollowMouse
+
+            //make the preview ignored by raycast,
+            //so that PreviewFollowMouse will avoid raycast from camera,
+            //not constantly changing its position
+            int LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
+            ItemPreview.layer = LayerIgnoreRaycast;
+        }
+
         public void BuildFurniture()
         {
             if (ItemPreview == null) return;
@@ -198,38 +216,20 @@ namespace TsingIGME601
                 itemController = null;
 
                 //Build on top of furniture
-                if(item.TryGetComponent<AbleToBuiltOn>(out AbleToBuiltOn component))
+                if (item.TryGetComponent<AbleToBuiltOn>(out AbleToBuiltOn component))
                 {
                     BuildSurfaces.Add(item);
-                    
+
                     AddOneVisualGridForFurniture(BuildSurfaces.Count - 1);
                 }
             }
             //Disable Visual Grid
-            _BSVBuffer.VisualGrid.SetActive(false);
+            //_BSVBuffer.VisualGrid.SetActive(false);
 
         }
 
         //called by controller (the button with the image)
-        public void SpawnPreview()
-        {
-            //instantiate a preview that follows the mouse
-            Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            ItemPreview = Instantiate(itemController.ItemPrefab, worldPos, Quaternion.identity);
-            ItemPreview.SetActive(true);
-            var previewScript = ItemPreview.AddComponent<PreviewFollowMouse>();
-            
-            //assign the preview denied material
-            previewScript._previewDeniedMaterial = _PreviewMatDenied;
-
-            //materials are changed to transparent at the Start of PreviewFollowMouse
-
-            //make the preview ignored by raycast,
-            //so that PreviewFollowMouse will avoid raycast from camera,
-            //not constantly changing its position
-            int LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
-            ItemPreview.layer = LayerIgnoreRaycast;
-        }
+        
         
         public void CancelBuild()
         {
@@ -243,7 +243,7 @@ namespace TsingIGME601
             FurnitureBuilding?.Invoke(false);
 
             //Disable Visual Grid
-            _BSVBuffer.VisualGrid.SetActive(false);
+            //_BSVBuffer.VisualGrid.SetActive(false);
         }
         public void SetController(ItemController controller)
         {
@@ -253,31 +253,31 @@ namespace TsingIGME601
             }
         }
         
-        public void ShowVisualGrid(BuildSurfaceVisual buildSurface)
-        {
-            if (buildSurface.VisualGrid == null)
-            {
-                Debug.LogWarning("No visual grid found!");
-                return;
-            }
-            if (_BSVBuffer != buildSurface)
-            {
-                buildSurface.VisualGrid.SetActive(true);
-                _BSVBuffer.VisualGrid.SetActive(false);
-                _BSVBuffer = buildSurface;
-            }
-            else
-            {
-                if (!_BSVBuffer.VisualGrid.activeSelf)
-                {
-                    _BSVBuffer.VisualGrid.SetActive(true);
-                }
-            } 
-        }
-        public void ClearVisualGrid()
-        {
-            _BSVBuffer.VisualGrid.SetActive(false);
-        }
+        //public void ShowVisualGrid(BuildSurfaceVisual buildSurface)
+        //{
+        //    if (buildSurface.VisualGrid == null)
+        //    {
+        //        Debug.LogWarning("No visual grid found!");
+        //        return;
+        //    }
+        //    if (_BSVBuffer != buildSurface)
+        //    {
+        //        buildSurface.VisualGrid.SetActive(true);
+        //        _BSVBuffer.VisualGrid.SetActive(false);
+        //        _BSVBuffer = buildSurface;
+        //    }
+        //    else
+        //    {
+        //        if (!_BSVBuffer.VisualGrid.activeSelf)
+        //        {
+        //            _BSVBuffer.VisualGrid.SetActive(true);
+        //        }
+        //    } 
+        //}
+        //public void ClearVisualGrid()
+        //{
+        //    _BSVBuffer.VisualGrid.SetActive(false);
+        //}
         public void RemoveFromBuildSurfaces(GameObject obj)
         {
             BuildSurfaces.Remove(obj);

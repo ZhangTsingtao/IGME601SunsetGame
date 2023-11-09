@@ -15,6 +15,7 @@ namespace TsingIGME601
         public Material _previewDeniedMaterial;
         public Material[] _materials;
         public Color[] _originalColorBuffer;
+        private GameObject VisualGrid;
 
         //rotation
         [SerializeField] private int _rotationDegree = 0;
@@ -34,6 +35,8 @@ namespace TsingIGME601
                 Material newMat = Utility.MaterialOpaqueToTransparent(_materials[i], 0.5f);
                 _materials[i] = newMat;
             }
+
+            VisualGrid = Instantiate(LevelEditorManager.Instance.VisualGrid);
         }
         private void Update()
         {
@@ -64,10 +67,13 @@ namespace TsingIGME601
         }
         private void LateUpdate()
         {
-            PositionToGrid();
+            bool showGrid = true;
+            showGrid &= PositionToGrid();
             CollisionDetection();
+            showGrid &= _placeable;
+            ArrangeVisualGrid(showGrid);
         }
-        private void PositionToGrid()
+        private bool PositionToGrid()
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             int layer_mask = LayerMask.GetMask("Build Surface");
@@ -75,16 +81,14 @@ namespace TsingIGME601
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layer_mask))
             {
                 //get grid position
-                transform.position = Utility.GetGridPosition(hit);
+                bool showGridCheck;
+                (transform.position, showGridCheck) = Utility.GetGridPosition(hit);
 
                 //update rotation
                 SetRotation(hit.transform, hit);
 
-                //the surface also shows its visual grid
-                if(hit.transform.TryGetComponent<BuildSurfaceVisual>(out BuildSurfaceVisual bsv))
-                {
-                    LevelEditorManager.Instance.ShowVisualGrid(bsv);
-                }  
+                
+                return showGridCheck;
             }
             else
             {
@@ -92,7 +96,8 @@ namespace TsingIGME601
 
                 transform.position = new Vector3(worldPos.x, worldPos.y, worldPos.z) + Camera.main.transform.forward * 10;
 
-                LevelEditorManager.Instance.ClearVisualGrid();
+                //LevelEditorManager.Instance.ClearVisualGrid();
+                return false;
             }
         }
         private void SetRotation(Transform targetTransform, RaycastHit hit)
@@ -115,14 +120,6 @@ namespace TsingIGME601
         //        _rotationDegree = 0;
         //    }
         //}
-
-        private void OnDrawGizmosSelected()
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawCube
-                (transform.TransformPoint(Vector3.up * _collider.bounds.extents.y / transform.localScale.y), 
-                _collider.bounds.extents * 2);
-        }
 
         private Collider[] _colBuffer = new Collider[4];
         private void CollisionDetection()
@@ -239,6 +236,21 @@ namespace TsingIGME601
             }
         }
 
+        private void ArrangeVisualGrid(bool showGrid)
+        {
+            if(!showGrid)
+            {
+                VisualGrid.SetActive(false);
+                return;
+            }
+            VisualGrid.SetActive(true);
+            VisualGrid.transform.position = transform.position + transform.up * 0.05f;
+            VisualGrid.transform.rotation = transform.rotation;
+        }
+        private void OnDestroy()
+        {
+            Destroy(VisualGrid.gameObject);
+        }
     }
 }
 

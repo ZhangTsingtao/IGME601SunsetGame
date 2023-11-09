@@ -3624,7 +3624,7 @@ MonoBehaviour:
   VisualGrid: {fileID: 5988762622828484331, guid: cc4fa65f398a14a41a65ee2709367ff1, type: 3}
   RoomLayout: {fileID: 1070824075}
   itemController: {fileID: 0}
-  HaveButtonPressed: 255
+  HaveButtonPressed: 0
   ItemPreview: {fileID: 0}
   BuildSurfaces: []
 --- !u!4 &2030972549
