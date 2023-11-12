@@ -6,19 +6,28 @@ using UnityEngine.UI;
 
 public class VolumeSlider : MonoBehaviour
 {
-    [SerializeField] private Slider slider;
+    private Slider slider;
 
+    [Header("True for BGM, false for SFX")]
+    public bool isBGM = true;
     private void Start()
     {
         slider = GetComponent<Slider>();
 
-        SoundManager.Instance.ChangeMasterVolume(slider.value);
+        ChangeVolume(slider.value);
 
         slider.onValueChanged.AddListener(ChangeVolume);
     }
 
     void ChangeVolume(float val) 
     {
-        SoundManager.Instance.ChangeMasterVolume(val);
+        if(isBGM)
+        {
+            SoundManager.Instance.ChangeBGMVolume(val);
+        }
+        else
+        {
+            SoundManager.Instance.ChangeSFXVolume(val);
+        }
     }
 }

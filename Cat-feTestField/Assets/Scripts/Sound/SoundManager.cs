@@ -38,9 +38,13 @@ namespace TsingIGME601
             musicSource.PlayScheduled(startTime);
         }
 
-        public void ChangeMasterVolume(float value)
+        public void ChangeBGMVolume(float value)
         {
-            AudioListener.volume = value;
+            musicSource.volume = value;
+        }
+        public void ChangeSFXVolume(float value)
+        {
+            effectSource.volume = value;
         }
 
     }
