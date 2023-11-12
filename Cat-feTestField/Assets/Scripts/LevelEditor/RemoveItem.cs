@@ -8,7 +8,6 @@ namespace TsingIGME601
     {
         public ItemController _controller;
 
-
         public void SetController(ItemController controller)
         {
             _controller = controller;

@@ -140,25 +140,6 @@ namespace TsingIGME601
             }
             vg.SetActive(false);
         }
-        private void AddOneVisualGridForFurniture(int i)
-        {
-            BuildSurfaces[i].AddComponent<Grid>();
-
-            GameObject vg = Instantiate(VisualGrid);
-            vg.transform.parent = BuildSurfaces[i].transform.parent.transform;
-
-            BuildSurfaceVisual build = BuildSurfaces[i].AddComponent<BuildSurfaceVisual>();
-            build.VisualGrid = vg;
-
-            //find y axis of the furniture's collider
-            BoxCollider bCol = BuildSurfaces[i].GetComponent<BoxCollider>();
-            
-            vg.transform.position = bCol.transform.position;
-            vg.transform.position += bCol.transform.up * bCol.size.y;
-            vg.transform.up = bCol.transform.up;
-
-            vg.SetActive(false);
-        }
 
         //For build surfaces, not furniture
         private void SetVGPos(GameObject vg, Vector3 visualOffset, Vector3 toCamDir, Vector3 surfacePos)
@@ -219,17 +200,16 @@ namespace TsingIGME601
                 if (item.TryGetComponent<AbleToBuiltOn>(out AbleToBuiltOn component))
                 {
                     BuildSurfaces.Add(item);
+                    item.AddComponent<Grid>();
+                }
 
-                    AddOneVisualGridForFurniture(BuildSurfaces.Count - 1);
+                //Sound
+                if (item.TryGetComponent<PlayOneSound>(out PlayOneSound playOneSound))
+                {
+                    playOneSound.PlayOneSoundEffect();
                 }
             }
-            //Disable Visual Grid
-            //_BSVBuffer.VisualGrid.SetActive(false);
-
-        }
-
-        //called by controller (the button with the image)
-        
+        }        
         
         public void CancelBuild()
         {
