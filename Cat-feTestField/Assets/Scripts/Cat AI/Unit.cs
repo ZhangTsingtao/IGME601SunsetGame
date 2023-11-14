@@ -17,7 +17,8 @@ namespace RoosaIGM601
 
         public float catHeight;
 
-        bool completingAction;
+        private bool completingAction;
+        private bool isIdle;
         Vector3 targetLocation;
         Vector3 previousLocation;
 
@@ -26,18 +27,23 @@ namespace RoosaIGM601
         private string callFrom;
         private Vector3 currentWaypoint;
         //private float targetRadius = 0.5f;
+        
 
         //communicate with leveleditor
         private bool canNavigate = true;
 
+        private float actionDuration;
+
         void Start()
         {
+
             target = start.position;
             PathManager.RequestPath(start.position, target, OnPathFound);
 
             LevelEditorManager.FurnitureBuilding += ToggleNavigation;
 
             completingAction = false;
+            isIdle = false;
             previousLocation = start.position;
 
             catHeight = 1;
@@ -55,6 +61,7 @@ namespace RoosaIGM601
         private void Update()
         {
             //Wander();
+            ChooseAction();
             // Check for user input to set a new target position
             if (Input.GetMouseButtonDown(0) && canNavigate)
             {
@@ -86,6 +93,7 @@ namespace RoosaIGM601
 
         public void Wander()
         {
+            //Debug.Log("Is wandering");
             if (!completingAction)
             {
                 //Find new random location to wander to
@@ -106,6 +114,9 @@ namespace RoosaIGM601
                 if (start.position == previousLocation)
                 {
                     completingAction = false;
+                    actionDuration = Random.Range(5f, 15f);
+                    isIdle = true;
+              
                 }
 
                 //Update the previous location with the current one
@@ -122,6 +133,44 @@ namespace RoosaIGM601
                 target = hit.point;
                 //MoveTo(target);
                 CatRotation(target);
+            }
+        }
+
+        public void Idle()
+        {
+            //Debug.Log("Is idle");
+            if (!completingAction)
+            {
+                //Activate Cat Animation - Placeholder
+                completingAction = true;
+            }
+            else
+            {
+
+
+                if(actionDuration <= 0)
+                {
+                    completingAction = false;
+                    isIdle = false;
+                    //Stop animating?
+                    return;
+                }
+
+                //Count down the timer
+                actionDuration = actionDuration - Time.deltaTime;
+            }
+        }
+
+        public void ChooseAction()
+        {
+            //Debug.Log("Is idle" + isIdle);
+            if (isIdle)
+            {
+                Idle();
+            }
+            else
+            {
+                Wander();
             }
         }
 
