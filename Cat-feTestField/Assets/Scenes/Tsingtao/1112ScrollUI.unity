@@ -3547,7 +3547,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59ed10cb411ce074cbafaeb5643402b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ItemPrefab: {fileID: 3541782903120870157, guid: 566212868b946c248aac1fba9e7bb000, type: 3}
+  ItemPrefab: {fileID: 2338781929484810765, guid: 005f7478e4dac4247b2b3a407c85ceed, type: 3}
   quantity: 5
   Clicked: 0
 --- !u!114 &916689137
