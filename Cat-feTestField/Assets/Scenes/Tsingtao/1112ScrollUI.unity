@@ -414,6 +414,13 @@ MonoBehaviour:
   - {fileID: 8300000, guid: d4b23021b3db1b646b713deb622c3cf3, type: 3}
   - {fileID: 8300000, guid: 6c59c3aa62412dd4f854a570156c6dc1, type: 3}
   - {fileID: 8300000, guid: cad152b1ff4d8f449ae94da22614d348, type: 3}
+  - {fileID: 8300000, guid: b952406f3e6ef9f41b71070c6d03ae0e, type: 3}
+  - {fileID: 8300000, guid: 9aa8485f0246db240a6ab3ca49ce61f0, type: 3}
+  - {fileID: 8300000, guid: 23031bd54e21c8641ac7bc848ab6d0f3, type: 3}
+  - {fileID: 8300000, guid: 509f811a0f665db49a934b8f47597d47, type: 3}
+  - {fileID: 8300000, guid: 513d474255d40414891c534f774be800, type: 3}
+  - {fileID: 8300000, guid: c78f98ec016107c4685b18d74ec92d9d, type: 3}
+  - {fileID: 8300000, guid: eb542ae93dd520e45901883b63071347, type: 3}
   musicIndex: 0
   nextMusicTime: 0
 --- !u!1 &132168125
