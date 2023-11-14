@@ -17,7 +17,8 @@ namespace RoosaIGM601
 
         public float catHeight;
 
-        bool completingAction;
+        private bool completingAction;
+        private bool isIdle;
         Vector3 targetLocation;
         Vector3 previousLocation;
 
@@ -27,14 +28,27 @@ namespace RoosaIGM601
         //communicate with leveleditor
         private bool canNavigate = true;
 
+        private float actionDuration;
+
+        private float walkBuffer;
+
+        //Animator
+        private Animator catAnimator;
+
+        public GameObject catModel;
+
         void Start() {
+            catAnimator = catModel.GetComponent<Animator>();
+
             target = start.position;
             PathManager.RequestPath(start.position,target, OnPathFound);
 
             LevelEditorManager.FurnitureBuilding += ToggleNavigation;
 
             completingAction = false;
+            isIdle = false;
             previousLocation = start.position;
+            walkBuffer = 0.1f;
 
             catHeight = 1;
         }
@@ -50,7 +64,8 @@ namespace RoosaIGM601
 
         private void Update()
         {
-            Wander();
+            //Wander();
+            ChooseAction();
             // Check for user input to set a new target position
             // if (Input.GetMouseButtonDown(0) && canNavigate)
             // {
@@ -80,17 +95,80 @@ namespace RoosaIGM601
                 //Move to new location and set completing action to true
                 MoveTo(targetLocation);
                 completingAction = true;
+
+                //Activate Animation
+                if(catAnimator != null)
+                {
+                    Debug.Log("Cat should be walking");
+                    catAnimator.SetTrigger("Walk");
+                }
+
+                walkBuffer = 0.1f;
             }
             else
             {
                 //Checks to see if it stops moving
-                if(start.position == previousLocation)
+                if (start.position == previousLocation && walkBuffer <= 0)
                 {
+                    Debug.Log("Position has been found");
                     completingAction = false;
+                    actionDuration = Random.Range(5f, 15f);
+                    isIdle = true;
                 }
 
                 //Update the previous location with the current one
+                walkBuffer = walkBuffer - Time.deltaTime;
                 previousLocation = start.position;
+            }
+        }
+
+        public void Idle()
+        {
+            //Debug.Log("Is idle");
+            if (!completingAction)
+            {
+                //Activate Cat Animation - Placeholder
+                completingAction = true;
+
+                Debug.Log("Cat should be idling");
+                int idleType = Random.Range(1, 4);
+                Debug.Log("Idle Type" + idleType);
+                if(idleType == 1 || idleType == 2)
+                {
+                    catAnimator.SetTrigger("Idle1");
+                }
+                else if(idleType == 3)
+                {
+                    catAnimator.SetTrigger("Idle3");
+                }
+            }
+            else
+            {
+
+
+                if (actionDuration <= 0)
+                {
+                    completingAction = false;
+                    isIdle = false;
+                    //Stop animating?
+                    return;
+                }
+
+                //Count down the timer
+                actionDuration = actionDuration - Time.deltaTime;
+            }
+        }
+
+        public void ChooseAction()
+        {
+            //Debug.Log("Is idle" + isIdle);
+            if (isIdle)
+            {
+                Idle();
+            }
+            else
+            {
+                Wander();
             }
         }
 
