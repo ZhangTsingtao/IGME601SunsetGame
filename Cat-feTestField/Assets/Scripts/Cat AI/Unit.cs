@@ -17,8 +17,17 @@ namespace RoosaIGM601
 
         public float catHeight;
 
+        //What action is happening?
         private bool completingAction;
         private bool isIdle;
+        private bool isPurring;
+
+        //Behavior Meters
+        private int tiredMeter;
+        private int boredMeter;
+        private int mischeviousMeter;
+
+        //Movement
         Vector3 targetLocation;
         Vector3 previousLocation;
 
@@ -79,7 +88,7 @@ namespace RoosaIGM601
 
         }
 
-        public void Wander()
+        private void Wander()
         {
             if (!completingAction)
             {
@@ -122,7 +131,7 @@ namespace RoosaIGM601
             }
         }
 
-        public void Idle()
+        private void Idle()
         {
             //Debug.Log("Is idle");
             if (!completingAction)
@@ -130,9 +139,9 @@ namespace RoosaIGM601
                 //Activate Cat Animation - Placeholder
                 completingAction = true;
 
-                Debug.Log("Cat should be idling");
+                //Debug.Log("Cat should be idling");
                 int idleType = Random.Range(1, 4);
-                Debug.Log("Idle Type" + idleType);
+                //Debug.Log("Idle Type" + idleType);
                 if(idleType == 1 || idleType == 2)
                 {
                     catAnimator.SetTrigger("Idle1");
@@ -157,6 +166,115 @@ namespace RoosaIGM601
                 //Count down the timer
                 actionDuration = actionDuration - Time.deltaTime;
             }
+        }
+
+        private void Purr()
+        {
+            if (!completingAction)
+            {
+                completingAction = true;
+
+                //TODO: Start purring animation
+            }
+            else
+            {
+                if (actionDuration <= 0)
+                {
+                    completingAction = false;
+                    isPurring = false;
+                    //TODO: Stop animating?
+                    return;
+                }
+
+                //Count down the timer
+                actionDuration = actionDuration - Time.deltaTime;
+            }
+        }
+
+        private void Nap()
+        {
+            //Debug.Log("Is idle");
+            if (!completingAction)
+            {
+                //Activate Cat Animation - Placeholder
+                completingAction = true;
+
+                //TODO: Implement pathfinding for a comfortable spot
+                //Check for any comfortable spots
+                //If there is, find the position of the nearest spot or comfiest spot
+                //If not find a random location
+
+                //MoveTo the specified location
+                //Start Nap Animation
+
+               
+            }
+            else
+            {
+                if (tiredMeter <= 0)
+                {
+                    completingAction = false;
+                    //isIdle = false;
+                    //Stop napping and stop animation
+
+                    return;
+                }
+
+                //Count down the timer
+                //After certain amount of time 
+                actionDuration = actionDuration - Time.deltaTime;
+                if(actionDuration < 0)
+                {
+                    tiredMeter--;
+                    //How many seconds till it gets less tired again
+                    actionDuration = 15;
+                }
+            }
+        }
+
+        private void PokeMouse()
+        {
+            //TODO: Implement function
+
+            //Find the raycasted position of the mouse
+
+            //Use the MoveTo function to move to the mouse location
+            //If it cannot access this, stop trying
+            //If it can, procede
+
+            //Once at the position, start the poke animation
+            //Play for random amount of time
+            //Meow at player
+
+            //Stop when player moves the mouse
+            //Stop after a certain amount of time ~15-30 seconds
+        }
+
+        private void PushObject()
+        {
+            //TODO: Implement push object function
+            
+            //Find a movable object
+            //Check to see if this movable object is ontop of a surface
+
+            //MoveTo function to move to the object
+
+            //Timer to stare at object and wait
+            
+            //Once ready, start animation to move object
+
+            //Finish action
+        }
+
+        private void PickedUp()
+        {
+            //TODO: Implement state for being picked up
+
+            //Turn model into rag doll
+            //Wait till mouse is released
+
+            //Activate falling and then landing animation
+            //Return back to normal
         }
 
         public void ChooseAction()
