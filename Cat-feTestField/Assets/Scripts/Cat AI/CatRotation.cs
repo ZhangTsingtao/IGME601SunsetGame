@@ -5,33 +5,82 @@ using UnityEngine;
 public class CatRotation : MonoBehaviour
 {
     // Start is called before the first frame update
-    private float rotSpeed = 0.1f;
-    private Vector3 target; 
-    //private float targetRadius = 0.5f;
-    Quaternion rotGoal;
-    Vector3 direction;
+    private float speed = 5f;
+    private Vector3 target;
+
+    private float rotSpeed = 10f;
+    bool isRotating = false;
+    // Start is called before the first frame update
+    void Start()
+    {
+        target = transform.position;
+    }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0)){
+        if (Input.GetMouseButtonDown(0))
+        {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            //Debug.Log("Ray origin: " + ray.origin);
-            //Debug.Log("Ray direction: " + ray.direction);
-
             if (Physics.Raycast(ray, out hit))
             {
-                //Debug.Log("Hello Roosa");
-                target = hit.point;
-                //Debug.Log("New target position: " + target);
-                CatRot(target);
-                //MoveTo(target);
-                
-                //PathManager.RequestPath(start.position, target, OnPathFound); // Recalculate the path to the new target
+                    target = hit.point;
+                    Vector3 directionToClick = target - transform.position;
+                    directionToClick.y=0;
+                    directionToClick.Normalize();
+                    Quaternion toRotation = Quaternion.LookRotation(directionToClick, Vector3.up);
+                    StartCoroutine(RotateAndMove(toRotation));
+                    
+            }
+
+        }
+
+        IEnumerator RotateAndMove(Quaternion toRotation)
+        {
+            isRotating = true;
+            float rotationTime = 0f;
+
+            while (!transform.rotation.Equals(toRotation))
+            {
+                rotationTime += rotSpeed * Time.deltaTime;
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, rotationTime);
+                Debug.Log("Rotated");
+                Debug.Log("Current Rotation" + transform.rotation);
+                Debug.Log("To Rotate" + toRotation);
+                yield return null;
+            }
+
+            // Rotation complete, now move towards the target position
+            isRotating = false;
+        }
+
+        
+        // float horizontalInput = Input.GetAxis("Horizontal");
+        // float verticalInput = Input.GetAxis("Vertical");
+         
+
+        // Vector3 movementDirection = new Vector3(horizontalInput, 0, verticalInput);
+        // movementDirection.Normalize();
+        // //transform.Translate(movementDirection * speed * Time.deltaTime, Space.World);
+        // transform.position = Vector3.MoveTowards(transform.position, target, speed* Time.deltaTime);
+
+        // if(movementDirection != Vector3.zero){
+        //     Quaternion toRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
+        //     transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, rotSpeed*Time.deltaTime);
+        // }
+    }
+
+    void FixedUpdate()
+        {
+            Debug.Log("Can you move");
+            if (!isRotating)
+            {
+                // Move towards the target position
+                Debug.Log("Can you move");
+                transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.fixedDeltaTime);
             }
         }
-    }
 
     public void CatRot(Vector3 targetPos)
     {
@@ -43,11 +92,11 @@ public class CatRotation : MonoBehaviour
         //transform.LookAt(targetPos);
         //////////////////
         ///
-        Vector3 dir = targetPos- transform.position;
-        Quaternion rot = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), rotSpeed * Time.deltaTime);
-        rot.y = 0;
-        rot.z = 0;
-        transform.rotation = rot;
+        // Vector3 dir = targetPos- transform.position;
+        // Quaternion rot = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), rotSpeed * Time.deltaTime);
+        // rot.y = 0;
+        // rot.z = 0;
+        // transform.rotation = rot;
         ///////////////////////
         // float mouseY = Input.GetAxis("Mouse Y") * Time.deltaTime * rotSpeed;
         // transform.Rotate(new Vector3(0, 0,mouseY));
