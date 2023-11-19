@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8673689650277838135}
   - component: {fileID: 5756936156242737408}
   - component: {fileID: 7597507406803837748}
-  - component: {fileID: -5189892419604084067}
+  - component: {fileID: 3076215941599968208}
   - component: {fileID: -7550949379822672275}
   - component: {fileID: -1685075981941112259}
   m_Layer: 3
@@ -86,7 +86,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &-5189892419604084067
+--- !u!65 &3076215941599968208
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -97,8 +97,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 3, y: 2.9999998, z: 1.0000007}
-  m_Center: {x: 0, y: 1.4931198, z: 0.00000023841858}
+  m_Size: {x: 3, y: 2.9999998, z: 1}
+  m_Center: {x: 0, y: 1.4931198, z: -0.00000023841858}
 --- !u!114 &-7550949379822672275
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -111,6 +111,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e3e648e244a47645a1bf9b8d6856b93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gridWorldSize: {x: 0, y: 0}
 --- !u!114 &-1685075981941112259
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -27,9 +27,18 @@ namespace TsingIGME601
         public static Action FurnitureUpdated;//called when a furniture is built/removed
         public static Action<bool> FurnitureBuilding;//This event is to toggle the navigation on/off
 
+        public Grid BuildGrid;
+
         private void Start()
         {
             HaveButtonPressed = false;
+
+            GameObject gridObject = new GameObject("BuildGrid");
+
+            gridObject.transform.position = Vector3.zero + Vector3.up; ;
+            gridObject.transform.parent = transform;
+
+            gridObject.AddComponent<Grid>();
         }
 
         #region Singleton
@@ -194,13 +203,6 @@ namespace TsingIGME601
 
                 Destroy(ItemPreview);
                 itemController = null;
-
-                //Build on top of furniture
-                if (item.TryGetComponent<AbleToBuiltOn>(out AbleToBuiltOn component))
-                {
-                    BuildSurfaces.Add(item);
-                    item.AddComponent<Grid>();
-                }
 
                 //Sound
                 if (item.TryGetComponent<PlayOneSound>(out PlayOneSound playOneSound))

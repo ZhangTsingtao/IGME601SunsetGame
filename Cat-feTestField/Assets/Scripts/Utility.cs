@@ -10,16 +10,32 @@ namespace TsingIGME601
         //Take a RaycastHit, then see if there's a grid component
         //if there is, then return the grid position
         //if not, just return the original hit position
+
+        //public static (Vector3, bool) GetGridPosition(RaycastHit hit)
+        //{
+        //    Grid grid = hit.transform.GetComponentInChildren<Grid>();
+
+        //    //Grid grid = GameObject.Find("BuildGrid").GetComponent<Grid>();
+
+        //    if (grid == null)
+        //    {
+        //        Debug.Log("Can't find any grid on Raycast hit");
+        //        return (hit.point, false);
+        //    }
+        //    Vector3Int cellPosition = grid.WorldToCell(hit.point);
+        //    return (grid.GetCellCenterWorld(cellPosition), true);
+        //}
+
         public static (Vector3, bool) GetGridPosition(RaycastHit hit)
         {
             GridLayout gridLayout = hit.transform.GetComponentInChildren<GridLayout>();
-
+            //GridLayout gridLayout = GameObject.Find("BuildGrid").GetComponent<GridLayout>();
             if (gridLayout == null)
             {
                 Debug.LogWarning("Can't find any grid on Raycast hit");
                 return (hit.point, false);
             }
-            
+
             Vector3Int cellPosition = gridLayout.WorldToCell(hit.point);
             return (gridLayout.CellToWorld(cellPosition), true);
         }

@@ -97,8 +97,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 3, y: 4, z: 1.0000005}
-  m_Center: {x: -0.00000023841858, y: 2, z: -0.045247674}
+  m_Size: {x: 3, y: 5, z: 1.8181992}
+  m_Center: {x: 0.00000023841858, y: 2.5, z: -0.00040522218}
 --- !u!114 &-3585722197277286722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -111,6 +111,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e3e648e244a47645a1bf9b8d6856b93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gridWorldSize: {x: 0, y: 0}
 --- !u!114 &1262717326429561225
 MonoBehaviour:
   m_ObjectHideFlags: 0
