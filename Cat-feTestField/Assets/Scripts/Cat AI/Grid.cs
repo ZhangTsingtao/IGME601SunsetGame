@@ -11,26 +11,66 @@ namespace RoosaIGM601
 		public LayerMask unwalkableMask;
 		public Vector2 gridWorldSize;
 		public float nodeRadius;
-		NextNode[,] grid;
+		public NextNode[,] grid;
 
 		float nodeDiameter;
 		int gridSizeX, gridSizeY;
 
-		void Awake() {
-			nodeDiameter = nodeRadius*2;
+		//Tsingtao Grid Setup
+		bool isFurniture = false;
+
+		void Awake() 
+		{
+			isFurniture = false;
+            nodeDiameter = nodeRadius*2;
 			gridSizeX = Mathf.RoundToInt(gridWorldSize.x/nodeDiameter);
 			gridSizeY = Mathf.RoundToInt(gridWorldSize.y/nodeDiameter);
-			CreateGrid();
-		}
 
-		public void CreateGrid() {
+            //Tsingtao Grid Setup
+            FurnitureGridSetup();
+
+            CreateGrid();
+		}
+		public void FurnitureGridSetup()
+		{
+            //Tsingtao Grid Setup
+            BoxCollider boxCollider = GetComponent<BoxCollider>();
+			if (boxCollider == null) return;
+
+			isFurniture = true;
+            gridWorldSize.x = boxCollider.bounds.extents.x * 2;
+            gridWorldSize.y = boxCollider.bounds.extents.z * 2;
+            nodeRadius = 0.1f;
+            nodeDiameter = nodeRadius * 2;
+
+            gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
+            gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
+            Debug.Log(gridSizeX + ", " + gridSizeY);
+
+            unwalkableMask = LayerMask.GetMask("Unwalkable");
+            player = GameObject.Find("CatCapsule (1)").transform;
+            //Tsingtao Grid Setup End
+        }
+        public void CreateGrid() {
 			Debug.Log("Hello from Create Grid");
 			grid = new NextNode[gridSizeX,gridSizeY];
-			Vector3 worldBottomLeft = transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.forward * gridWorldSize.y / 2 + (new Vector3(0,1.5f - nodeDiameter/2,0));
-			
-			//worldBottomLeft += new Vector3(0, ( gridWorldSize.y / 2), 0);
 
-			for (int x = 0; x < gridSizeX; x ++) {
+			Vector3 worldBottomLeft = Vector3.zero;
+
+            if (isFurniture)
+			{
+                BoxCollider boxCollider = GetComponent<BoxCollider>();
+                worldBottomLeft = boxCollider.bounds.center - Vector3.right * gridWorldSize.x / 2 - Vector3.forward * gridWorldSize.y / 2;
+                worldBottomLeft += Vector3.up * (boxCollider.bounds.extents.y + 1 - nodeRadius);
+            }
+			else
+			{
+                worldBottomLeft = transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.forward * gridWorldSize.y / 2 + (new Vector3(0, 1.5f - nodeDiameter / 2, 0));
+            }
+
+            //worldBottomLeft += new Vector3(0, ( gridWorldSize.y / 2), 0);
+
+            for (int x = 0; x < gridSizeX; x ++) {
 				for (int y = 0; y < gridSizeY; y ++) {
 					Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
 					bool openPath = !(Physics.CheckSphere(worldPoint,nodeRadius,unwalkableMask));
