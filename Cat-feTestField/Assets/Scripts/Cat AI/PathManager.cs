@@ -10,10 +10,12 @@ namespace RoosaIGM601
 		Queue<PathRequest> pathRequestQueue = new Queue<PathRequest>();
 		PathRequest currentPathRequest;
 
-		static PathManager instance;
+		public static PathManager instance;
 		Pathfinding pathfinding;
 
 		bool isProcessingPath;
+
+		public List<Grid> grids = new List<Grid>();
 
 		void Awake() {
 			instance = this;

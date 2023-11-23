@@ -18,6 +18,7 @@ namespace RoosaIGM601
 
 		//Tsingtao Grid Setup
 		bool isFurniture = false;
+		public Vector3 GridWorldCenterPos;
 
 		void Awake() 
 		{
@@ -31,7 +32,11 @@ namespace RoosaIGM601
 
             CreateGrid();
 		}
-		public void FurnitureGridSetup()
+        private void Start()
+        {
+            PathManager.instance.grids.Add(this);
+        }
+        public void FurnitureGridSetup()
 		{
             //Tsingtao Grid Setup
             BoxCollider boxCollider = GetComponent<BoxCollider>();
@@ -68,7 +73,8 @@ namespace RoosaIGM601
                 worldBottomLeft = transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.forward * gridWorldSize.y / 2 + (new Vector3(0, 1.5f - nodeDiameter / 2, 0));
             }
 
-            //worldBottomLeft += new Vector3(0, ( gridWorldSize.y / 2), 0);
+			//worldBottomLeft += new Vector3(0, ( gridWorldSize.y / 2), 0);
+			GridWorldCenterPos = worldBottomLeft + Vector3.right * gridWorldSize.x / 2 + Vector3.forward * gridWorldSize.y / 2;
 
             for (int x = 0; x < gridSizeX; x ++) {
 				for (int y = 0; y < gridSizeY; y ++) {
@@ -78,6 +84,7 @@ namespace RoosaIGM601
 					grid[x,y] = new NextNode(openPath,worldPoint, x, y);
 				}
 			}
+
 		}
 
 		public List<NextNode> GetNeighbours(NextNode node){
@@ -114,7 +121,6 @@ namespace RoosaIGM601
 		public List<NextNode> path;
 		void OnDrawGizmos() {
 			Gizmos.DrawWireCube(transform.position,new Vector3(gridWorldSize.x,1,gridWorldSize.y));
-
 		
 			if (grid != null) {
 				NextNode playerNode = NodeFromWorldPoint(player.position);
@@ -134,7 +140,11 @@ namespace RoosaIGM601
 				}
 			}
 		}
-	}
+        private void OnDestroy()
+        {
+            PathManager.instance.grids.Remove(this);
+        }
+    }
 }
 
 // public class Node1 {
