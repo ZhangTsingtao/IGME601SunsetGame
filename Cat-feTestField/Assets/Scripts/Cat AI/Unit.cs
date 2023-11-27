@@ -82,7 +82,7 @@ namespace RoosaIGM601
             // Check for user input to set a new target position
             if (Input.GetMouseButtonDown(0) && canNavigate)
             {
-                ClickedLocation();
+                //ClickedLocation();
             }
         }
 

@@ -14,6 +14,7 @@ public class NextNode
 
         public int gridX;
         public int gridY;
+        //private bool jumpNode;
 
         public NextNode parent;
 
@@ -23,6 +24,7 @@ public class NextNode
             worldPosition = _worldPos;
             gridX = _gridX;
             gridY = _gridY;
+            //jumpNode = _jumpNode;
         }
 
         public int fCost{
