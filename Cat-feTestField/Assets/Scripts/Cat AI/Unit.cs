@@ -88,7 +88,7 @@ namespace RoosaIGM601
 
         void FixedUpdate()
         {
-            Debug.Log(isRotating);
+            //Debug.Log(isRotating);
             if (!isRotating)
             {
                 if(callFrom == "Wandering"){
