@@ -17,14 +17,18 @@ namespace RoosaIGM601
 
 		void Awake() {
 			requestManager = GetComponent<PathManager>();
-			grid = GetComponent<Grid> ();
 		}
 
-		// void Update() {
-		// 	FindPath (seeker.position, target.position);
-		// }
+        private void Start()
+        {
+			grid = GetComponent<Grid>();
+		}
 
-		// IEnumerator CatRotation(Vector3 targetPos){
+        // void Update() {
+        // 	FindPath (seeker.position, target.position);
+        // }
+
+        // IEnumerator CatRotation(Vector3 targetPos){
         // //     // Vector3 dir = target- transform.position;
         // //     // Quaternion rot = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), rotSpeed * Time.deltaTime);
         // //     // rot.y = 0;
@@ -46,13 +50,18 @@ namespace RoosaIGM601
         //         // Smoothly rotate towards the direction
         //         //float rotationSpeed = 5f;
         //         transform.rotation = Quaternion.Lerp(transform.rotation, rotation, rotSpeed * Time.deltaTime);
-		// 		yield return null;
-    
+        // 		yield return null;
+
         // }
 
-		public void StartFindPath(Vector3 startPos, Vector3 targetPos) {
+        public void StartFindPath(Vector3 startPos, Vector3 targetPos) {
 			StartCoroutine(FindPath(startPos,targetPos));
 		}
+
+		public void StartFindJumpPath(Vector3 startPos, Vector3 targetPos)
+        {
+
+        }
 
 		IEnumerator FindPath(Vector3 startPos, Vector3 targetPos) {
 			//CatRotation(targetPos);
@@ -107,7 +116,11 @@ namespace RoosaIGM601
 			requestManager.FinishedProcessingPath(waypoints,pathSuccess);
 		}
 
-		
+		IEnumerator FindJumpPath(Vector3 startPos, Vector3 targetPos)
+        {
+			yield return null;
+        }
+
 		Vector3[] RetracePath(NextNode startNode, NextNode endNode) {
 			List<NextNode> path = new List<NextNode>();
 			NextNode currentNode = endNode;

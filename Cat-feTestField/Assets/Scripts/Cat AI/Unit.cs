@@ -15,6 +15,8 @@ namespace RoosaIGM601
         Vector3[] path;
         int targetIndex;
 
+        public static Unit instance;
+
         public float catHeight;
 
         //What action is happening?
@@ -30,6 +32,10 @@ namespace RoosaIGM601
         //Movement
         Vector3 targetLocation;
         Vector3 previousLocation;
+
+        //Current Grid
+        private Grid currentGrid;
+        private Grid targetGrid;
 
         private float rotSpeed = 10f;
         bool isRotating = true;
@@ -50,11 +56,16 @@ namespace RoosaIGM601
 
         public GameObject catModel;
 
+        private void Awake()
+        {
+            instance = this;
+        }
+
         void Start() {
             catAnimator = catModel.GetComponent<Animator>();
 
             target = start.position;
-            PathManager.RequestPath(start.position, target, OnPathFound);
+            //PathManager.RequestPath(start.position, currentGrid, target, targetGrid, OnPathFound);
 
             LevelEditorManager.FurnitureBuilding += ToggleNavigation;
 
@@ -64,6 +75,8 @@ namespace RoosaIGM601
             walkBuffer = 0.1f;
 
             catHeight = 1;
+
+            //currentGrid = PathManager.instance.grids[0];
         }
         private void OnDestroy()
         {
@@ -322,6 +335,13 @@ namespace RoosaIGM601
             }
         }
 
+        public void Jump()
+        {
+            //Choose some grid
+            //From here choose a spot on this grid and return the node and grid index
+            //Request path from here
+        }
+
 
         public void CatRotation(Vector3 targetPos)
         {
@@ -354,7 +374,7 @@ namespace RoosaIGM601
         private void MoveTo(Vector3 goalLocation)
         {
 
-            PathManager.RequestPath(start.position, goalLocation, OnPathFound); // Recalculate the path to the new target
+            PathManager.RequestPath(start.position, currentGrid, goalLocation, targetGrid, OnPathFound); // Recalculate the path to the new target
         }
 
         public void OnPathFound(Vector3[] newPath, bool pathSuccessful)

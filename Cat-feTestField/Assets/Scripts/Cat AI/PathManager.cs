@@ -17,15 +17,35 @@ namespace RoosaIGM601
 
 		public List<Grid> grids = new List<Grid>();
 
+		public Grid currentGrid;
+		public Grid targetGrid;
+
 		void Awake() {
 			instance = this;
 			pathfinding = GetComponent<Pathfinding>();
 		}
 
-		public static void RequestPath(Vector3 pathStart, Vector3 pathEnd, Action<Vector3[], bool> callback) {
-			PathRequest newRequest = new PathRequest(pathStart,pathEnd,callback);
-			instance.pathRequestQueue.Enqueue(newRequest);
-			instance.TryProcessNext();
+        private void Start()
+        {
+            currentGrid = grids[0];
+            targetGrid = grids[0];
+        }
+
+        public static void RequestPath(Vector3 pathStart, Grid _currentGrid, Vector3 pathEnd, Grid _targetGrid, Action<Vector3[], bool> callback) {
+			if(_currentGrid == _targetGrid)
+            {
+				PathRequest newRequest = new PathRequest(pathStart, pathEnd, callback);
+				instance.pathRequestQueue.Enqueue(newRequest);
+				instance.TryProcessNext();
+			}
+			//Here is the location for jumping algorithm
+            else
+            {
+
+            }
+
+
+			instance.targetGrid = _targetGrid;
 		}
 
 		void TryProcessNext() {
@@ -36,8 +56,19 @@ namespace RoosaIGM601
 			}
 		}
 
+		void TryProcessNextJump()
+        {
+			if (!isProcessingPath && pathRequestQueue.Count > 0)
+			{
+				currentPathRequest = pathRequestQueue.Dequeue();
+				isProcessingPath = true;
+				pathfinding.StartFindJumpPath(currentPathRequest.pathStart, currentPathRequest.pathEnd);
+			}
+		}
+
 		public void FinishedProcessingPath(Vector3[] path, bool success) {
 			currentPathRequest.callback(path,success);
+			currentGrid = targetGrid;
 			isProcessingPath = false;
 			TryProcessNext();
 		}

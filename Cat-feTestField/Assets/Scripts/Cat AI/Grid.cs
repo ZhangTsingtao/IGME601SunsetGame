@@ -12,6 +12,7 @@ namespace RoosaIGM601
 		public Vector2 gridWorldSize;
 		public float nodeRadius;
 		public NextNode[,] grid;
+		public int gridIndex;
 
 		float nodeDiameter;
 		int gridSizeX, gridSizeY;
@@ -34,7 +35,7 @@ namespace RoosaIGM601
 		}
 		private void Start()
 		{
-			PathManager.instance.grids.Add(this);
+			
 		}
 		public void FurnitureGridSetup()
 		{
@@ -88,6 +89,8 @@ namespace RoosaIGM601
 				}
 			}
 
+			PathManager.instance.grids.Add(this);
+			gridIndex = PathManager.instance.grids.LastIndexOf(this);
 		}
 
 		public List<NextNode> GetNeighbours(NextNode node)
@@ -148,14 +151,21 @@ namespace RoosaIGM601
 
 		public NextNode NodeFromWorldPoint(Vector3 worldPosition)
 		{
-			float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
-			float percentY = (worldPosition.z + gridWorldSize.y / 2) / gridWorldSize.y;
-			percentX = Mathf.Clamp01(percentX);
-			percentY = Mathf.Clamp01(percentY);
+			if (PathManager.instance.currentGrid = PathManager.instance.grids[gridIndex])
+            {
+				float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
+				float percentY = (worldPosition.z + gridWorldSize.y / 2) / gridWorldSize.y;
+				percentX = Mathf.Clamp01(percentX);
+				percentY = Mathf.Clamp01(percentY);
 
-			int x = Mathf.RoundToInt((gridSizeX - 1) * percentX);
-			int y = Mathf.RoundToInt((gridSizeY - 1) * percentY);
-			return grid[x, y];
+				int x = Mathf.RoundToInt((gridSizeX - 1) * percentX);
+				int y = Mathf.RoundToInt((gridSizeY - 1) * percentY);
+				return grid[x, y];
+			}
+			else
+            {
+				return null;
+            }
 		}
 
 		public List<NextNode> path;
@@ -186,10 +196,10 @@ namespace RoosaIGM601
                     {
                         Gizmos.color = Color.yellow; // Set non-obstacle nodes to yellow
 
-                        if (playerNode == n)
+/*                        if (playerNode == n)
                         {
                             Gizmos.color = Color.cyan;
-                        }
+                        }*/
 
                         if (path != null)
                         {
