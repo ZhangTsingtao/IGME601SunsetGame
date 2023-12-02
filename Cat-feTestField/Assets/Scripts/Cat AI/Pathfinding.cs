@@ -55,6 +55,7 @@ namespace RoosaIGM601
         // }
 
         public void StartFindPath(Vector3 startPos, Vector3 targetPos) {
+			Debug.Log("Step 9 --> Inside Start Finding path");
 			StartCoroutine(FindPath(startPos,targetPos));
 		}
 
@@ -65,6 +66,7 @@ namespace RoosaIGM601
 
 		IEnumerator FindPath(Vector3 startPos, Vector3 targetPos) {
 			//CatRotation(targetPos);
+			Debug.Log("Step 10 --> Finding path");
 			Vector3[] waypoints = new Vector3[0];
 			bool pathSuccess = false;
 			
@@ -113,6 +115,7 @@ namespace RoosaIGM601
 			if (pathSuccess) {
 				waypoints = RetracePath(startNode,targetNode);
 			}
+			Debug.Log("Step 11 --> Calling Finished Processing Path");
 			requestManager.FinishedProcessingPath(waypoints,pathSuccess);
 		}
 

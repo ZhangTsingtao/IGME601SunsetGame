@@ -37,7 +37,7 @@ namespace RoosaIGM601
         private Grid currentGrid;
         private Grid targetGrid;
 
-        private float rotSpeed = 10f;
+        private float rotSpeed = 0.5f;
         bool isRotating = true;
         private string callFrom;
         private Vector3 currentWaypoint;
@@ -55,7 +55,10 @@ namespace RoosaIGM601
         private Animator catAnimator;
 
         public GameObject catModel;
-
+        private bool rotationComplted = false;
+        private float waypointProximity = 0.1f;
+        private bool catReachedTarget;
+        private bool findNewTarget;
         private void Awake()
         {
             instance = this;
@@ -63,8 +66,9 @@ namespace RoosaIGM601
 
         void Start() {
             catAnimator = catModel.GetComponent<Animator>();
-
+            
             target = start.position;
+            Debug.Log("I am target from star" + target);
             //PathManager.RequestPath(start.position, currentGrid, target, targetGrid, OnPathFound);
 
             LevelEditorManager.FurnitureBuilding += ToggleNavigation;
@@ -75,6 +79,7 @@ namespace RoosaIGM601
             walkBuffer = 0.1f;
 
             catHeight = 1;
+            findNewTarget=true;
 
             //currentGrid = PathManager.instance.grids[0];
         }
@@ -95,23 +100,36 @@ namespace RoosaIGM601
             // Check for user input to set a new target position
             if (Input.GetMouseButtonDown(0) && canNavigate)
             {
+                Debug.Log("Step 1 --> Calling Clicked Location");
                 //ClickedLocation();
             }
         }
 
         void FixedUpdate()
         {
-            //Debug.Log(isRotating);
-            if (!isRotating)
-            {
-                if(callFrom == "Wandering"){
-                    Debug.Log("Inside Wander");
-                    MoveTo(targetLocation);
-                }
-                else{
-                    MoveTo(target);
-                    //transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
-                    //transform.LookAt(currentWaypoint);
+            // Debug.Log(isRotating);
+            // if (!isRotating)
+            // {
+            //     Debug.Log("I am target from Fixed Update" + target);
+            //     MoveTo(target);
+            //     // if(callFrom == "Wandering"){
+            //     //     Debug.Log("Inside Wander");
+            //     //     MoveTo(targetLocation);
+            //     // }
+            //     // else{
+            //     //     MoveTo(target);
+            //     //     //transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
+            //     //     //transform.LookAt(currentWaypoint);
+            //     // }
+            // }
+            Debug.Log("Step 16 --> Check if rotation os completed or not inside fixed update = "+rotationComplted);
+            if(rotationComplted){
+                Debug.Log("Step 18 --> Inside if rotation os completed or not = "+rotationComplted);
+                if(!catReachedTarget)
+                {
+                    Debug.Log("Step 19 --> Inside while of fixed update");
+                    StopCoroutine("StartMoving");
+                    StartCoroutine("StartMoving");
                 }
             }
         }
@@ -126,14 +144,26 @@ namespace RoosaIGM601
             //Debug.Log("Is wandering");
             if (!completingAction)
             {
+                Debug.Log("Step 20 --> Inside Wander");
                 //Find new random location to wander to
-                targetLocation = new Vector3(Random.Range(-4.0f, 4.0f), 0f, Random.Range(-4.0f, 4.0f));
-
+                if(findNewTarget)
+                {
+                    targetLocation = new Vector3(Random.Range(-4.0f, 4.0f), 0f, Random.Range(-4.0f, 4.0f));
+                    while(Vector3.Distance(targetLocation, previousLocation) < 10)
+                    {
+                        targetLocation = new Vector3(Random.Range(-4.0f, 4.0f), 0f, Random.Range(-4.0f, 4.0f));
+                    }
+                    findNewTarget = false;
+                }
                 //Speed of how fast the cat will move to this location
                 speed = Random.Range(1f, 3f);
-
+                if(transform.position != targetLocation)
+                {
+                    catReachedTarget=false;
+                    MoveTo(targetLocation);
+                }
                 //Move to new location and set completing action to true
-                MoveTo(targetLocation);
+                
                 callFrom = "Wandering";
                 //CatRotation(targetLocation);
                 completingAction = true;
@@ -330,8 +360,14 @@ namespace RoosaIGM601
             if (Physics.Raycast(ray, out hit))
             {
                 target = hit.point;
-                //MoveTo(target);
-                CatRotation(target);
+                Debug.Log("Step 2 --> Inside Clicked Location after target it set");
+                if(transform.position != target)
+                {
+                    catReachedTarget=false;
+                }
+                MoveTo(target);
+                Debug.Log("I am target from clicked location"+target);
+                //CatRotation(target);
             }
         }
 
@@ -345,6 +381,7 @@ namespace RoosaIGM601
 
         public void CatRotation(Vector3 targetPos)
         {
+            Debug.Log("Step 13 --> Inside Cat Rotation");
             Vector3 directionToClick = targetPos - transform.position;
             directionToClick.y=0;
             directionToClick.Normalize();
@@ -369,18 +406,22 @@ namespace RoosaIGM601
 
             // Rotation complete, now move towards the target position
             isRotating = false;
+            Debug.Log("Step 14 --> Rotation Completed");
+            rotationComplted = true;
         }
 
         private void MoveTo(Vector3 goalLocation)
         {
-
+            Debug.Log("Step 3 --> Calling Request path from Move To");
             PathManager.RequestPath(start.position, currentGrid, goalLocation, targetGrid, OnPathFound); // Recalculate the path to the new target
         }
 
         public void OnPathFound(Vector3[] newPath, bool pathSuccessful)
         {
+            Debug.Log("Step 4 --> Chking onpathfound outside if");
             if (pathSuccessful)
             {
+                Debug.Log("Step 4 --> Chking onpathfound");
                 path = newPath;
                 targetIndex = 0;
                 StopCoroutine("FollowPath");
@@ -394,21 +435,33 @@ namespace RoosaIGM601
             {
                 yield break; // No path to follow, exit the coroutine
             }
+            Debug.Log("Step 5 --> Inside Follow Path Coroutine");
+            CatRotation(targetLocation);
+            Debug.Log("Step 15 --> Check if rotation os completed or not = "+rotationComplted);
+        }
+
+        IEnumerator StartMoving()
+        {
+            Debug.Log("Step 17 --> Inside if after Cat Rotation inside follow path");
 
             currentWaypoint = path[0];
-            float waypointProximity = 0.1f; // Adjust as needed
+             // Adjust as needed
             int pathLength = path.Length;
 
-            for (int i = 0; i < pathLength; i++) 
+            for (int i = 0; i < pathLength; i++)
             {
                 currentWaypoint = path[i];
                 currentWaypoint.y = catHeight;
 
-                while (Vector3.Distance(transform.position, currentWaypoint) > waypointProximity) 
+                while (Vector3.Distance(transform.position, currentWaypoint) > waypointProximity)
                 {
                     //CatRotation(currentWaypoint);
+                    Debug.Log("Step 6 --> Changing transform Position");
                     transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
                     transform.LookAt(currentWaypoint);
+                    rotationComplted = false;
+                    catReachedTarget=true;
+                    findNewTarget=true;
                     yield return null;
                 }
             }
@@ -426,10 +479,12 @@ namespace RoosaIGM601
                     if (i == targetIndex)
                     {
                         Gizmos.DrawLine(transform.position, path[i]);
+                        Debug.Log("Target index");
                     }
                     else
                     {
                         Gizmos.DrawLine(path[i - 1], path[i]);
+                        Debug.Log("Hello else Target index");
                     }
                 }
             }
