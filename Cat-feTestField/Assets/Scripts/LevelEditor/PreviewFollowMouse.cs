@@ -133,12 +133,12 @@ namespace TsingIGME601
                     Quaternion.identity
                 );
 
-            Utility.DisplayBox
-                (
-                    transform.TransformPoint(_collider.center),
-                    _collider.bounds.extents * 0.9f, 
-                    Quaternion.identity
-                );
+            //Utility.DisplayBox
+            //    (
+            //        transform.TransformPoint(_collider.center),
+            //        _collider.bounds.extents * 0.9f, 
+            //        Quaternion.identity
+            //    );
 
             if (hitAmount > 1)//itself is also included. so start from 1 rather than 0
             {

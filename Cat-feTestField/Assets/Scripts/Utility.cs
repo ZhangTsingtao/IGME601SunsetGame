@@ -32,7 +32,7 @@ namespace TsingIGME601
             //GridLayout gridLayout = GameObject.Find("BuildGrid").GetComponent<GridLayout>();
             if (gridLayout == null)
             {
-                Debug.LogWarning("Can't find any grid on Raycast hit");
+                //Debug.LogWarning("Can't find any grid on Raycast hit");
                 return (hit.point, false);
             }
 

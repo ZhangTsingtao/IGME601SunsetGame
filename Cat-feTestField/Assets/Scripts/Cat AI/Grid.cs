@@ -151,6 +151,7 @@ namespace RoosaIGM601
 
 		public NextNode NodeFromWorldPoint(Vector3 worldPosition)
 		{
+			if(gridIndex >= PathManager.instance.grids.Count) return null;
 			if (PathManager.instance.currentGrid = PathManager.instance.grids[gridIndex])
             {
 				float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
