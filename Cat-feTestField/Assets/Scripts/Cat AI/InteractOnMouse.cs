@@ -7,6 +7,7 @@ public class InteractOnMouse : MonoBehaviour
 {
     public GameObject plane;
     public float maxDragDistance = 20;
+    public bool mouseIsHovering;
     private void Start()
     {
         plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
@@ -15,9 +16,24 @@ public class InteractOnMouse : MonoBehaviour
         plane.SetActive(false);
         plane.gameObject.layer = LayerMask.NameToLayer("Drag");
     }
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0) && mouseIsHovering)
+        {
+            GetComponent<RoosaIGM601.Unit>().completingAction = false;
+
+            GetComponent<RoosaIGM601.Unit>().isPickedUp = true;
+            GetComponent<RoosaIGM601.Unit>().isHeld = true;
+        }
+        else if(Input.GetMouseButtonUp(0) && mouseIsHovering)
+        {
+            GetComponent<RoosaIGM601.Unit>().isHeld = false;
+        }
+    }
     private void OnMouseEnter()
     {
         SetPlanePosRot();
+        mouseIsHovering = true;
     }
     private void OnMouseDrag()
     {
@@ -25,11 +41,12 @@ public class InteractOnMouse : MonoBehaviour
         layer_mask += LayerMask.GetMask("Build Surface");
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layer_mask);
-        transform.position = hit.point;
+        transform.position = hit.point;    
     }
     private void OnMouseExit()
     {
         plane.SetActive(false);
+        mouseIsHovering = false;
     }
     private void SetPlanePosRot()
     {

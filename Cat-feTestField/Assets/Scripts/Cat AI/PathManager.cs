@@ -49,6 +49,7 @@ namespace RoosaIGM601
 		}
 
 		void TryProcessNext() {
+			Debug.Log("Try process next is running");
 			if (!isProcessingPath && pathRequestQueue.Count > 0) {
 				currentPathRequest = pathRequestQueue.Dequeue();
 				isProcessingPath = true;

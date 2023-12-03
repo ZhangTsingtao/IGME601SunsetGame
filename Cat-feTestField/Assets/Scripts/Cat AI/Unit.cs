@@ -20,9 +20,13 @@ namespace RoosaIGM601
         public float catHeight;
 
         //What action is happening?
-        private bool completingAction;
+        public bool completingAction;
         private bool isIdle;
         private bool isPurring;
+        private bool isFalling;
+        public bool isPickedUp;
+        private bool justPickedUp;
+        public bool isHeld;
 
         //Behavior Meters
         private int tiredMeter;
@@ -63,6 +67,7 @@ namespace RoosaIGM601
 
         void Start() {
             catAnimator = catModel.GetComponent<Animator>();
+            justPickedUp = false;
 
             target = start.position;
             //PathManager.RequestPath(start.position, currentGrid, target, targetGrid, OnPathFound);
@@ -92,6 +97,7 @@ namespace RoosaIGM601
         {
             //Wander();
             ChooseAction();
+
             // Check for user input to set a new target position
             if (Input.GetMouseButtonDown(0) && canNavigate)
             {
@@ -123,7 +129,7 @@ namespace RoosaIGM601
 
         private void Wander()
         {
-            //Debug.Log("Is wandering");
+            Debug.Log("Is wandering");
             if (!completingAction)
             {
                 //Find new random location to wander to
@@ -137,9 +143,10 @@ namespace RoosaIGM601
                 callFrom = "Wandering";
                 //CatRotation(targetLocation);
                 completingAction = true;
+                StartCoroutine("FollowPath");
 
                 //Activate Animation
-                if(catAnimator != null)
+                if (catAnimator != null)
                 {
                     Debug.Log("Cat should be walking");
                     catAnimator.SetTrigger("Walk");
@@ -301,38 +308,72 @@ namespace RoosaIGM601
 
         private void PickedUp()
         {
-            //TODO: Implement state for being picked up
+            //Turn model into rag doll??
 
-            //Turn model into rag doll
             //Wait till mouse is released
 
-            //Activate falling and then landing animation
-            //Return back to normal
+            if (!justPickedUp)
+            {
+                this.GetComponent<Rigidbody>().isKinematic = false;
+                StopCoroutine("FollowPath");
+
+                //Activate falling 
+                isFalling = true;
+                isHeld = true;
+                completingAction = true;
+                justPickedUp = true;
+            }
+
+            if (start.position == previousLocation && isHeld == false)
+            {
+                //Landing Animation 
+                //catAnimator.SetTrigger("Landing");
+
+                //Return back to normal
+                isFalling = false;
+                completingAction = false;
+                justPickedUp = false;
+                isPickedUp = false;
+            }
+
+            //Falling animation
+            if (isFalling)
+            {
+                previousLocation = start.position;
+                //catAnimator.SetTrigger("Falling");
+            }
+    
         }
 
         private void ChooseAction()
         {
             //Debug.Log("Is idle" + isIdle);
-            if (isIdle)
+            if (isPickedUp)
+            {
+                PickedUp();
+            }
+            else if (isIdle)
             {
                 Idle();
+                //Debug.Log("Cat is idle");
             }
             else
             {
                 Wander();
+                //Debug.Log("Cat is wandering");
             }
         }
 
         public void ClickedLocation()
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+/*            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
                 target = hit.point;
                 //MoveTo(target);
                 CatRotation(target);
-            }
+            }*/
         }
 
         public void Jump()
@@ -373,8 +414,7 @@ namespace RoosaIGM601
 
         private void MoveTo(Vector3 goalLocation)
         {
-
-            PathManager.RequestPath(start.position, currentGrid, goalLocation, targetGrid, OnPathFound); // Recalculate the path to the new target
+            PathManager.RequestPath(start.position, currentGrid, goalLocation, targetGrid, OnPathFound); // Recalculate the path to the new target                    
         }
 
         public void OnPathFound(Vector3[] newPath, bool pathSuccessful)
@@ -386,11 +426,12 @@ namespace RoosaIGM601
                 StopCoroutine("FollowPath");
                 StartCoroutine("FollowPath");
             }
+
         }
 
         IEnumerator FollowPath()
         {
-            if (path == null || path.Length == 0) 
+            if (path == null || path.Length == 0)
             {
                 yield break; // No path to follow, exit the coroutine
             }
@@ -399,19 +440,19 @@ namespace RoosaIGM601
             float waypointProximity = 0.1f; // Adjust as needed
             int pathLength = path.Length;
 
-            for (int i = 0; i < pathLength; i++) 
+            for (int i = 0; i < pathLength; i++)
             {
                 currentWaypoint = path[i];
                 currentWaypoint.y = catHeight;
 
-                while (Vector3.Distance(transform.position, currentWaypoint) > waypointProximity) 
+                while (Vector3.Distance(transform.position, currentWaypoint) > waypointProximity && !isPickedUp)
                 {
                     //CatRotation(currentWaypoint);
                     transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
                     transform.LookAt(currentWaypoint);
                     yield return null;
                 }
-            }
+            }         
         }
 
         public void OnDrawGizmos()
