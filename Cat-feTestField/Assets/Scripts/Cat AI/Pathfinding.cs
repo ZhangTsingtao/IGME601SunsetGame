@@ -24,36 +24,6 @@ namespace RoosaIGM601
 			grid = GetComponent<Grid>();
 		}
 
-        // void Update() {
-        // 	FindPath (seeker.position, target.position);
-        // }
-
-        // IEnumerator CatRotation(Vector3 targetPos){
-        // //     // Vector3 dir = target- transform.position;
-        // //     // Quaternion rot = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), rotSpeed * Time.deltaTime);
-        // //     // rot.y = 0;
-        // //     // rot.z = 0;
-        // //     // transform.rotation = rot;
-
-        // //     // float mouseY = Input.GetAxis("Mouse Y") * Time.deltaTime * rotSpeed;
-        // //     // transform.Rotate(new Vector3(0, 0,mouseY));
-
-        // //     Vector3 direction = target.position - transform.position;
-        // //     float distance = direction.magnitude;
-        // //     Vector2 velocity = direction.normalized * (distance / targetRadius);
-        // //     float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
-        // //     transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
-        //         Debug.Log("Hello Cat");
-        //         Vector3 direction = targetPos - transform.position;
-        //         Quaternion rotation = Quaternion.LookRotation(direction);
-
-        //         // Smoothly rotate towards the direction
-        //         //float rotationSpeed = 5f;
-        //         transform.rotation = Quaternion.Lerp(transform.rotation, rotation, rotSpeed * Time.deltaTime);
-        // 		yield return null;
-
-        // }
-
         public void StartFindPath(Vector3 startPos, Vector3 targetPos) {
 			Debug.Log("Step 9 --> Inside Start Finding path");
 			StartCoroutine(FindPath(startPos,targetPos));

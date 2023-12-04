@@ -72,7 +72,7 @@ namespace RoosaIGM601
         }
 
         public void FinishedProcessingPath(Vector3[] path, bool success) {
-			Debug.Log("Step 12 --> Inside FinishedProcessingPath");
+			Debug.Log("Step 12 --> Inside FinishedProcessingPath" + path +" -- "+ success);
             currentPathRequest.callback(path,success);
             currentGrid = targetGrid;
             isProcessingPath = false;

@@ -149,10 +149,6 @@ namespace RoosaIGM601
                 if(findNewTarget)
                 {
                     targetLocation = new Vector3(Random.Range(-4.0f, 4.0f), 0f, Random.Range(-4.0f, 4.0f));
-                    while(Vector3.Distance(targetLocation, previousLocation) < 10)
-                    {
-                        targetLocation = new Vector3(Random.Range(-4.0f, 4.0f), 0f, Random.Range(-4.0f, 4.0f));
-                    }
                     findNewTarget = false;
                 }
                 //Speed of how fast the cat will move to this location
@@ -418,7 +414,7 @@ namespace RoosaIGM601
 
         public void OnPathFound(Vector3[] newPath, bool pathSuccessful)
         {
-            Debug.Log("Step 4 --> Chking onpathfound outside if");
+            Debug.Log("Step 4 --> Chking onpathfound outside if" + pathSuccessful);
             if (pathSuccessful)
             {
                 Debug.Log("Step 4 --> Chking onpathfound");
@@ -443,7 +439,10 @@ namespace RoosaIGM601
         IEnumerator StartMoving()
         {
             Debug.Log("Step 17 --> Inside if after Cat Rotation inside follow path");
-
+            if (path == null || path.Length == 0) 
+            {
+                yield break; // No path to follow, exit the coroutine
+            }
             currentWaypoint = path[0];
              // Adjust as needed
             int pathLength = path.Length;
