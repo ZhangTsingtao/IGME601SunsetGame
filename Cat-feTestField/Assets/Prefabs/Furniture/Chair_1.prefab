@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -5553389716797378622}
   m_Layer: 3
   m_Name: Chair_1
-  m_TagString: Untagged
+  m_TagString: Floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -96,8 +96,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 2, z: 1}
-  m_Center: {x: 0.00000035762787, y: 0.9815301, z: 0.0000004172325}
+  m_Size: {x: 1.5, y: 3, z: 1.5}
+  m_Center: {x: 0.0000005066395, y: 1.472295, z: 0.0000006556511}
 --- !u!114 &-5553389716797378622
 MonoBehaviour:
   m_ObjectHideFlags: 0
