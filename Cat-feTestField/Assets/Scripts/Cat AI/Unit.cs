@@ -28,6 +28,11 @@ namespace RoosaIGM601
         private bool justPickedUp;
         public bool isHeld;
 
+        private bool isWalking;
+
+        private bool isSitting;
+        private bool sittingTrigger;
+
         //Behavior Meters
         private int tiredMeter;
         private int boredMeter;
@@ -36,6 +41,11 @@ namespace RoosaIGM601
         //Movement
         Vector3 targetLocation;
         Vector3 previousLocation;
+
+
+        //Jumping Behavior
+        private bool startJump;
+        private bool endJump;
 
         //Current Grid
         private Grid currentGrid;
@@ -80,12 +90,30 @@ namespace RoosaIGM601
             walkBuffer = 0.1f;
 
             catHeight = 1;
+            tiredMeter = Random.Range(6, 15);
 
             //currentGrid = PathManager.instance.grids[0];
         }
         private void OnDestroy()
         {
             LevelEditorManager.FurnitureBuilding -= ToggleNavigation;
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            //Debug.Log("Collision Detection");
+            if (other.CompareTag("Floor") && !isHeld)
+            {
+                isFalling = false;
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (other.CompareTag("Floor") && isWalking)
+            {
+                isFalling = true;
+            }
         }
 
         private void ToggleNavigation(bool isBuilding)
@@ -111,10 +139,10 @@ namespace RoosaIGM601
             if (!isRotating)
             {
                 if(callFrom == "Wandering"){
-                    Debug.Log("Inside Wander");
+                    //Debug.Log("Inside Wander");
                     MoveTo(targetLocation);
                 }
-                else{
+                else if(!isFalling){
                     MoveTo(target);
                     //transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
                     //transform.LookAt(currentWaypoint);
@@ -124,45 +152,62 @@ namespace RoosaIGM601
 
         public void InvestigateObject()
         {
-
+            //Not Implemented
         }
 
         private void Wander()
-        {
-            Debug.Log("Is wandering");
+        {         
             if (!completingAction)
-            {
-                //Find new random location to wander to
-                targetLocation = new Vector3(Random.Range(-4.0f, 4.0f), 0f, Random.Range(-4.0f, 4.0f));
-
-                //Speed of how fast the cat will move to this location
-                speed = Random.Range(1f, 3f);
-
-                //Move to new location and set completing action to true
-                MoveTo(targetLocation);
-                callFrom = "Wandering";
-                //CatRotation(targetLocation);
-                completingAction = true;
-                StartCoroutine("FollowPath");
-
-                //Activate Animation
-                if (catAnimator != null)
-                {
-                    Debug.Log("Cat should be walking");
-                    catAnimator.SetTrigger("Walk");
+            {               
+                if (isSitting)
+                {                  
+                    if (!sittingTrigger)
+                    {
+                        actionDuration = 2.1f;
+                        catAnimator.SetTrigger("FinishSitting");
+                        sittingTrigger = true;
+                    }
+                    else
+                    {
+                        actionDuration = actionDuration - Time.deltaTime;
+                    }       
+                    if(actionDuration <= 0)
+                    {
+                        isSitting = false;
+                        sittingTrigger = false;
+                    }
                 }
+                else
+                {
+                    //Find new random location to wander to
+                    targetLocation = new Vector3(Random.Range(-4.0f, 4.0f), 0f, Random.Range(-4.0f, 4.0f));
 
-                walkBuffer = 0.1f;
+                    //Speed of how fast the cat will move to this location
+                    speed = Random.Range(1f, 3f);
+
+                    //Move to new location and set completing action to true
+                    MoveTo(targetLocation);
+                    callFrom = "Wandering";
+                    //CatRotation(targetLocation);
+                    completingAction = true;
+                    StartCoroutine("FollowPath");
+
+                    //Activate Animation
+                    catAnimator.SetTrigger("Walk");
+
+                    walkBuffer = 0.1f;
+                }
             }
             else
             {
                 //Checks to see if it stops moving
                 if (start.position == previousLocation && walkBuffer <= 0)
                 {
-                    Debug.Log("Position has been found");
+                    //Debug.Log("Position has been found");
                     completingAction = false;
                     actionDuration = Random.Range(5f, 15f);
                     isIdle = true;
+                    tiredMeter--;
                 }
 
                 //Update the previous location with the current one
@@ -173,23 +218,33 @@ namespace RoosaIGM601
 
         private void Idle()
         {
-            //Debug.Log("Is idle");
             if (!completingAction)
             {
                 //Activate Cat Animation - Placeholder
                 completingAction = true;
 
-                //Debug.Log("Cat should be idling");
-                int idleType = Random.Range(1, 4);
-                //Debug.Log("Idle Type" + idleType);
-                if(idleType == 1 || idleType == 2)
+                int idleType = Random.Range(1, 5);
+                if (idleType == 1)
                 {
                     catAnimator.SetTrigger("Idle1");
+                    actionDuration = Random.Range(4, 16);
+                }
+                if (idleType == 2)
+                {
+                    catAnimator.SetTrigger("Idle2");
+                    actionDuration = Random.Range(5, 16);
                 }
                 else if(idleType == 3)
                 {
                     catAnimator.SetTrigger("Idle3");
+                    actionDuration = 5;
                 }
+                else if (idleType == 4)
+                {
+                    catAnimator.SetTrigger("Idle4");
+                    isSitting = true;
+                    actionDuration = Random.Range(5, 15);
+                }                
             }
             else
             {
@@ -233,7 +288,6 @@ namespace RoosaIGM601
 
         private void Nap()
         {
-            //Debug.Log("Is idle");
             if (!completingAction)
             {
                 //Activate Cat Animation - Placeholder
@@ -245,29 +299,22 @@ namespace RoosaIGM601
                 //If not find a random location
 
                 //MoveTo the specified location
-                //Start Nap Animation
-
-               
+                //Start Nap Animation and duration
+                catAnimator.SetTrigger("Nap");
+                actionDuration = Random.Range(20,45);
             }
             else
             {
-                if (tiredMeter <= 0)
-                {
-                    completingAction = false;
-                    //isIdle = false;
-                    //Stop napping and stop animation
-
-                    return;
-                }
-
                 //Count down the timer
-                //After certain amount of time 
+                //After certain amount of time it will regain its energy
                 actionDuration = actionDuration - Time.deltaTime;
                 if(actionDuration < 0)
                 {
-                    tiredMeter--;
-                    //How many seconds till it gets less tired again
-                    actionDuration = 15;
+                    tiredMeter = Random.Range(6, 15);
+
+                    completingAction = false;
+                    //Stop napping and stop animation
+                    return;
                 }
             }
         }
@@ -309,14 +356,14 @@ namespace RoosaIGM601
         private void PickedUp()
         {
             //Turn model into rag doll??
-
+            //StopCoroutine("FollowPath");
             //Wait till mouse is released
-
             if (!justPickedUp)
             {
-                this.GetComponent<Rigidbody>().isKinematic = false;
+                //this.GetComponent<Rigidbody>().isKinematic = false;            
                 StopCoroutine("FollowPath");
-
+                path = null;
+                catAnimator.SetTrigger("Falling");
                 //Activate falling 
                 isFalling = true;
                 isHeld = true;
@@ -324,49 +371,58 @@ namespace RoosaIGM601
                 justPickedUp = true;
             }
 
-            if (start.position == previousLocation && isHeld == false)
+            //Falling animation
+            if (isFalling && !isHeld)
             {
-                //Landing Animation 
-                //catAnimator.SetTrigger("Landing");
+                //start.position = new Vector3(0, 1, 0) * Time.deltaTime;
+                transform.Translate(Vector3.down * 10 * Time.deltaTime);
 
+                previousLocation = start.position;
+
+                if (transform.position.y < 3)
+                {
+                    catAnimator.SetTrigger("Landing");
+                }
+            }
+            else if (!isHeld)
+            {
                 //Return back to normal
                 isFalling = false;
                 completingAction = false;
                 justPickedUp = false;
                 isPickedUp = false;
+                canNavigate = true;
+                isIdle = true;
+                if(transform.position.y > 3)
+                {
+                    catAnimator.SetTrigger("Landing");
+                }                  
             }
-
-            //Falling animation
-            if (isFalling)
-            {
-                previousLocation = start.position;
-                //catAnimator.SetTrigger("Falling");
-            }
-    
         }
 
         private void ChooseAction()
         {
-            //Debug.Log("Is idle" + isIdle);
             if (isPickedUp)
             {
                 PickedUp();
             }
+            else if(tiredMeter <= 0)
+            {
+                Nap();
+            }
             else if (isIdle)
             {
                 Idle();
-                //Debug.Log("Cat is idle");
             }
             else
             {
                 Wander();
-                //Debug.Log("Cat is wandering");
             }
         }
 
         public void ClickedLocation()
         {
-/*            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+/*          Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
@@ -380,6 +436,7 @@ namespace RoosaIGM601
         {
             //Choose some grid
             //From here choose a spot on this grid and return the node and grid index
+
             //Request path from here
         }
 
@@ -423,8 +480,17 @@ namespace RoosaIGM601
             {
                 path = newPath;
                 targetIndex = 0;
-                StopCoroutine("FollowPath");
-                StartCoroutine("FollowPath");
+                if (start.position.y > 2)
+                {
+                    StopCoroutine("FollowPath");
+                    StartCoroutine("FollowJumpPath");
+                }
+                else
+                {
+                    StopCoroutine("FollowPath");
+                    StartCoroutine("FollowPath");
+                }
+
             }
 
         }
@@ -447,12 +513,102 @@ namespace RoosaIGM601
 
                 while (Vector3.Distance(transform.position, currentWaypoint) > waypointProximity && !isPickedUp)
                 {
-                    //CatRotation(currentWaypoint);
-                    transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
-                    transform.LookAt(currentWaypoint);
-                    yield return null;
+                    if (!isFalling)
+                    {
+                        //CatRotation(currentWaypoint);
+                        transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
+                        transform.LookAt(currentWaypoint);
+                        yield return null;
+                    }
                 }
             }         
+        }
+
+        IEnumerator FollowJumpPath()
+        {           
+            if (path == null || path.Length == 0)
+            {
+                yield break; // No path to follow, exit the coroutine
+            }
+
+            currentWaypoint = path[0];
+            float waypointProximity = 0.1f; // Adjust as needed
+            int pathLength = path.Length;
+
+            isWalking = true;
+
+            /*//Jump Function
+            Vector3 startLocation = transform.position;
+            Vector3 nextJumpWaypoint = currentWaypoint;
+
+            float jumpTimerReset = 0;
+            float jumpSpeed = 2;
+
+            while (transform.position.y > nextJumpWaypoint.y && jumpTimerReset < 3)
+            {
+                Debug.Log("Jump while loop is running");
+                Vector3 center = (startLocation + nextJumpWaypoint) * 0.5F;
+                // move the center a bit downwards to make the arc vertical
+                center -= new Vector3(0, 1, 0);
+                // Interpolate over the arc relative to center
+                Vector3 riseRelCenter = startLocation - center;
+                Vector3 setRelCenter = nextJumpWaypoint - center;
+                // The fraction of the animation that has happened so far is
+                // equal to the elapsed time divided by the desired time 
+                // the total journey.            
+                float fracComplete = (jumpTimerReset - 0) / jumpSpeed;
+                jumpTimerReset += Time.deltaTime;
+
+                
+
+
+                transform.position = Vector3.Slerp(riseRelCenter, setRelCenter, 0);
+                transform.position += center;
+                float dist;
+                dist = Vector3.Distance(transform.position, nextJumpWaypoint);
+            
+                if (dist < 0.5f)
+                {
+                    startLocation = nextJumpWaypoint;
+                    //endJump = true;
+                    //jumpTimerReset = 0;                    
+                }
+                yield return null;
+            }*/
+
+            for (int i = 0; i < pathLength; i++)
+            {
+                currentWaypoint = path[i];
+                currentWaypoint.y = catHeight;
+
+                //Debug.Log("Should be walking now");
+                while (Vector3.Distance(transform.position, currentWaypoint) > waypointProximity && !isPickedUp)
+                {
+                    if (isFalling)
+                    {
+                        //start.position = new Vector3(0, 1, 0) * Time.deltaTime;
+                        transform.Translate(Vector3.down * 10 * Time.deltaTime);
+
+                        previousLocation = start.position;
+                        //catAnimator.SetTrigger("Falling");
+                    }
+                    if (!isFalling)
+                    {
+                        //CatRotation(currentWaypoint);
+                        Vector3 tempCurrentWaypoint = currentWaypoint;
+                        if(currentWaypoint.y != previousLocation.y)
+                        {
+                            tempCurrentWaypoint.y = previousLocation.y;
+                        }
+                        transform.position = Vector3.MoveTowards(transform.position, tempCurrentWaypoint, speed * Time.deltaTime);                  
+                        previousLocation = start.position;
+                        transform.LookAt(currentWaypoint);
+                        yield return null;
+                    }
+
+                }
+            }
+            isWalking = false;
         }
 
         public void OnDrawGizmos()

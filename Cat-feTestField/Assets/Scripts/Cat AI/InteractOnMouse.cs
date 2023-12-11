@@ -25,7 +25,7 @@ public class InteractOnMouse : MonoBehaviour
             GetComponent<RoosaIGM601.Unit>().isPickedUp = true;
             GetComponent<RoosaIGM601.Unit>().isHeld = true;
         }
-        else if(Input.GetMouseButtonUp(0) && mouseIsHovering)
+        else if(Input.GetMouseButtonUp(0))
         {
             GetComponent<RoosaIGM601.Unit>().isHeld = false;
         }
@@ -61,7 +61,7 @@ public class InteractOnMouse : MonoBehaviour
     {
         if(transform.position.magnitude > maxDragDistance)
         {
-            transform.position = Vector3.one;
+            transform.position = new Vector3(1,5,1);
             Debug.Log("You got me too far");
         }
     }

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - LevelEditorManager
   - TagOfCollidersOfInterest
+  - Floor
   layers:
   - Default
   - TransparentFX

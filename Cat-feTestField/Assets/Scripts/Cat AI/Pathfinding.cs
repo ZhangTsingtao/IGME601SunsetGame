@@ -60,8 +60,8 @@ namespace RoosaIGM601
 
 		public void StartFindJumpPath(Vector3 startPos, Vector3 targetPos)
         {
-
-        }
+			StartCoroutine(FindJumpPath(startPos, targetPos));
+		}
 
 		IEnumerator FindPath(Vector3 startPos, Vector3 targetPos) {
 			//CatRotation(targetPos);
