@@ -110,6 +110,7 @@ namespace RoosaIGM601
 
         private void OnTriggerExit(Collider other)
         {
+
             if (other.CompareTag("Floor") && isWalking)
             {
                 isFalling = true;
@@ -208,6 +209,7 @@ namespace RoosaIGM601
                     actionDuration = Random.Range(5f, 15f);
                     isIdle = true;
                     tiredMeter--;
+                    isWalking = false;
                 }
 
                 //Update the previous location with the current one
@@ -480,10 +482,11 @@ namespace RoosaIGM601
             {
                 path = newPath;
                 targetIndex = 0;
-                if (start.position.y > 2)
+                if (transform.position.y > 2)
                 {
-                    StopCoroutine("FollowPath");
-                    StartCoroutine("FollowJumpPath");
+                    Debug.Log("On path found is runing");
+                    StopCoroutine("FollowPath");                 
+                    StartCoroutine("FollowPath");
                 }
                 else
                 {
@@ -521,11 +524,13 @@ namespace RoosaIGM601
                         yield return null;
                     }
                 }
-            }         
+            }
+            //isWalking = false;
         }
 
         IEnumerator FollowJumpPath()
-        {           
+        {
+            Debug.Log("Jump path is running");
             if (path == null || path.Length == 0)
             {
                 yield break; // No path to follow, exit the coroutine
@@ -534,47 +539,8 @@ namespace RoosaIGM601
             currentWaypoint = path[0];
             float waypointProximity = 0.1f; // Adjust as needed
             int pathLength = path.Length;
+       
 
-            isWalking = true;
-
-            /*//Jump Function
-            Vector3 startLocation = transform.position;
-            Vector3 nextJumpWaypoint = currentWaypoint;
-
-            float jumpTimerReset = 0;
-            float jumpSpeed = 2;
-
-            while (transform.position.y > nextJumpWaypoint.y && jumpTimerReset < 3)
-            {
-                Debug.Log("Jump while loop is running");
-                Vector3 center = (startLocation + nextJumpWaypoint) * 0.5F;
-                // move the center a bit downwards to make the arc vertical
-                center -= new Vector3(0, 1, 0);
-                // Interpolate over the arc relative to center
-                Vector3 riseRelCenter = startLocation - center;
-                Vector3 setRelCenter = nextJumpWaypoint - center;
-                // The fraction of the animation that has happened so far is
-                // equal to the elapsed time divided by the desired time 
-                // the total journey.            
-                float fracComplete = (jumpTimerReset - 0) / jumpSpeed;
-                jumpTimerReset += Time.deltaTime;
-
-                
-
-
-                transform.position = Vector3.Slerp(riseRelCenter, setRelCenter, 0);
-                transform.position += center;
-                float dist;
-                dist = Vector3.Distance(transform.position, nextJumpWaypoint);
-            
-                if (dist < 0.5f)
-                {
-                    startLocation = nextJumpWaypoint;
-                    //endJump = true;
-                    //jumpTimerReset = 0;                    
-                }
-                yield return null;
-            }*/
 
             for (int i = 0; i < pathLength; i++)
             {
@@ -586,13 +552,21 @@ namespace RoosaIGM601
                 {
                     if (isFalling)
                     {
+                        Vector3 tempCurrentWaypoint = currentWaypoint;
+                        tempCurrentWaypoint.y = 1;
                         //start.position = new Vector3(0, 1, 0) * Time.deltaTime;
+                        //transform.position = Vector3.MoveTowards(transform.position, tempCurrentWaypoint, 10 * Time.deltaTime);
                         transform.Translate(Vector3.down * 10 * Time.deltaTime);
+
 
                         previousLocation = start.position;
                         //catAnimator.SetTrigger("Falling");
+                        if(transform.position.y < 1.1f)
+                        {
+                            isFalling = false;
+                        }
                     }
-                    if (!isFalling)
+                    else if(!isFalling)
                     {
                         //CatRotation(currentWaypoint);
                         Vector3 tempCurrentWaypoint = currentWaypoint;
@@ -608,7 +582,6 @@ namespace RoosaIGM601
 
                 }
             }
-            isWalking = false;
         }
 
         public void OnDrawGizmos()
