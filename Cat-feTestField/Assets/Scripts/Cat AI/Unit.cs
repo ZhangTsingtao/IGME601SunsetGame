@@ -111,10 +111,10 @@ namespace RoosaIGM601
         private void OnTriggerExit(Collider other)
         {
 
-            if (other.CompareTag("Floor") && isWalking)
+/*            if (other.CompareTag("Floor") && isWalking)
             {
                 isFalling = true;
-            }
+            }*/
         }
 
         private void ToggleNavigation(bool isBuilding)
@@ -362,6 +362,7 @@ namespace RoosaIGM601
             //Wait till mouse is released
             if (!justPickedUp)
             {
+                isHeld = true;
                 //this.GetComponent<Rigidbody>().isKinematic = false;            
                 StopCoroutine("FollowPath");
                 path = null;
@@ -376,15 +377,17 @@ namespace RoosaIGM601
             //Falling animation
             if (isFalling && !isHeld)
             {
+                Debug.Log("This falling method is running");
                 //start.position = new Vector3(0, 1, 0) * Time.deltaTime;
                 transform.Translate(Vector3.down * 10 * Time.deltaTime);
 
                 previousLocation = start.position;
 
-                if (transform.position.y < 3)
+/*                if (transform.position.y < 3 && !isHeld)
                 {
+                    Debug.Log("This is running 3");
                     catAnimator.SetTrigger("Landing");
-                }
+                }*/
             }
             else if (!isHeld)
             {
@@ -394,8 +397,8 @@ namespace RoosaIGM601
                 justPickedUp = false;
                 isPickedUp = false;
                 canNavigate = true;
-                isIdle = true;
-                if(transform.position.y > 3)
+                isIdle = true;            
+                if (transform.position.y > 3)
                 {
                     catAnimator.SetTrigger("Landing");
                 }                  

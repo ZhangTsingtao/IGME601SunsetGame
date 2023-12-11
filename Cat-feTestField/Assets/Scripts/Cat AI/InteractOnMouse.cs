@@ -27,6 +27,7 @@ public class InteractOnMouse : MonoBehaviour
         }
         else if(Input.GetMouseButtonUp(0))
         {
+            Debug.Log("This is running");
             GetComponent<RoosaIGM601.Unit>().isHeld = false;
         }
     }
