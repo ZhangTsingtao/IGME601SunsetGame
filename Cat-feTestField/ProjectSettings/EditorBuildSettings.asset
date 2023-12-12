@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Tsingtao/1130MouseInteraction.unity
-    guid: e3e599682e8e5374486578fb6470ffc6
+    path: Assets/Scenes/Tsingtao/1210FinalBuild.unity
+    guid: 1e5bcd8f94d6a57438362cf268ffb7f1
   m_configObjects: {}

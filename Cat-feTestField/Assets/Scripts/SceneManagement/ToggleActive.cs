@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class ToggleActive : MonoBehaviour
 {
-    public Button toggleButton;
+    private Button toggleButton;
     public GameObject toggleUIElement;
     private bool toggle;
     // Start is called before the first frame update

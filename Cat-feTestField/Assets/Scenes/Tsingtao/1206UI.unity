@@ -10339,7 +10339,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 192bc7fc20da5f04bafb3775a14008a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toggleButton: {fileID: 0}
   toggleUIElement: {fileID: 1447214913}
 --- !u!114 &1780928007
 MonoBehaviour:
@@ -10891,7 +10890,7 @@ Canvas:
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 963194227}
-  m_PlaneDistance: 100
+  m_PlaneDistance: 50
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
