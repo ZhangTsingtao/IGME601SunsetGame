@@ -11,7 +11,7 @@ public class CameraRotateScript : MonoBehaviour
     public float sensitivity = -1f;
     private Vector3 rotate;
 
-    private Vector3 initialCamPos;
+    private Quaternion initialCamRot;
     private Camera cam;
     private float scrollSpeed = 10;
 
@@ -19,7 +19,7 @@ public class CameraRotateScript : MonoBehaviour
     void Start()
     {
         cam = GetComponentInChildren<Camera>();
-        initialCamPos = transform.position;
+        initialCamRot = transform.rotation;
     }
 
     // Update is called once per frame
@@ -40,5 +40,9 @@ public class CameraRotateScript : MonoBehaviour
         x = Input.GetAxis("Mouse Y");
         rotate = new Vector3(x, y * sensitivity, 0);
         transform.eulerAngles = transform.eulerAngles - rotate;
+    }
+    public void ResetCamPos()
+    {
+        transform.rotation = initialCamRot;
     }
 }
