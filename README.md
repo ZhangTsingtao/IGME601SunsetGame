@@ -1,4 +1,5 @@
 # IGME601SunsetGame
+Play it here: https://zhangqiantao.itch.io/purr-decor
 
 Team member:
 Hongxing Qian, Tsingtao Zhang, Sam Burgoyne, Roosa Mozoomdar.
